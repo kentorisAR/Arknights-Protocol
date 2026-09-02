@@ -39,13 +39,38 @@
       gap: 15px;
       width: 340px;
       text-align: center;
+      position: relative;
+    }
+
+    /* Переключатель языков на логин-экране */
+    .lang-selector-login {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-family: monospace;
+    }
+
+    .lang-btn {
+      color: rgba(0, 240, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover, .lang-btn.active {
+      color: #00f0ff;
+      text-shadow: 0 0 5px rgba(0, 240, 255, 0.8);
+      font-weight: bold;
     }
 
     .login-box h2 {
       color: #00f0ff;
       font-family: 'Courier New', monospace;
       letter-spacing: 2px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      margin-top: 10px;
     }
 
     .login-input {
@@ -177,9 +202,15 @@
       bottom: 0;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 0 15px;
       z-index: 2000;
       box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.7);
+    }
+
+    .taskbar-left {
+      display: flex;
+      align-items: center;
     }
 
     .start-btn {
@@ -215,6 +246,14 @@
       color: #00f0ff;
       font-size: 0.85rem;
       width: 180px;
+    }
+
+    .taskbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: monospace;
+      font-size: 0.85rem;
     }
 
     /* МЕНЮ ПУСК */
@@ -298,87 +337,87 @@
 </head>
 <body>
 
-  <!-- 1. ЭКРАН ВХОДА -->
   <div id="login-screen">
     <div class="login-box">
-      <h2>PRTS ARCHIVE ACCESS</h2>
-      <input type="text" id="login-input" class="login-input" placeholder="Логин" readonly>
-      <input type="password" id="password-input" class="login-input" placeholder="Пароль" readonly>
-      <button id="login-btn" class="login-btn" onclick="startLoginSequence()">ВХОД В СИСТЕМУ</button>
-      <div id="hint-text" class="hint-text">[ Нажимайте любые клавиши для ввода ]</div>
+      <div class="lang-selector-login">
+        <span class="lang-btn" data-lang="ru" onclick="setLanguage('ru')">RU</span>
+        <span class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</span>
+        <span class="lang-btn" data-lang="jp" onclick="setLanguage('jp')">JP</span>
+      </div>
+      <h2 data-i18n="loginTitle">PRTS ARCHIVE ACCESS</h2>
+      <input type="text" id="login-input" class="login-input" data-i18n-placeholder="loginPlaceholder" placeholder="Логин" readonly>
+      <input type="password" id="password-input" class="login-input" data-i18n-placeholder="passwordPlaceholder" placeholder="Пароль" readonly>
+      <button id="login-btn" class="login-btn" data-i18n="loginBtn" onclick="startLoginSequence()">ВХОД В СИСТЕМУ</button>
+      <div id="hint-text" class="hint-text" data-i18n="hintTyping">[ Нажимайте любые клавиши для ввода ]</div>
     </div>
   </div>
 
-  <!-- 2. ВИДЕО-ЗАСТАВКА -->
   <div id="video-overlay">
     <video id="intro-video" preload="auto" playsinline>
       <source src="Welcome Back, Doctor..mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- 3. РАБОЧИЙ СТОЛ -->
   <div id="desktop-container">
     <div class="crt-overlay"></div>
 
     <div id="desktop">
       <div class="icon" onclick="openWindow('archive-win')" data-name="архив данных rhodes island">
         <div class="icon-img">📁</div>
-        <div class="icon-title">Архив Данных</div>
+        <div class="icon-title" data-i18n="iconArchive">Архив Данных</div>
       </div>
       <div class="icon" onclick="openWindow('operators-win')" data-name="операторы ростер">
         <div class="icon-img">👥</div>
-        <div class="icon-title">Операторы</div>
+        <div class="icon-title" data-i18n="iconOperators">Операторы</div>
       </div>
       <div class="icon" onclick="openWindow('terminal-win')" data-name="консоль терминал prts">
         <div class="icon-img">💻</div>
-        <div class="icon-title">Терминал PRTS</div>
+        <div class="icon-title" data-i18n="iconTerminal">Терминал PRTS</div>
       </div>
     </div>
 
-    <!-- МЕНЮ ПУСК -->
     <div id="start-menu" class="hidden">
-      <div style="font-weight: bold; border-bottom: 1px solid #00f0ff; padding-bottom: 5px; margin-bottom: 5px; color: #fff;">
+      <div style="font-weight: bold; border-bottom: 1px solid #00f0ff; padding-bottom: 5px; margin-bottom: 5px; color: #fff;" data-i18n="startTitle">
         PRTS SYSTEM MENU
       </div>
-      <div class="menu-item" onclick="openWindow('archive-win'); toggleStartMenu();">📂 Открыть Архив</div>
-      <div class="menu-item" onclick="openWindow('operators-win'); toggleStartMenu();">👥 Открыть Операторов</div>
-      <div class="menu-item" onclick="openWindow('terminal-win'); toggleStartMenu();">💻 Запустить Консоль</div>
-      <div class="menu-item" style="color: #ff5555; border-top: 1px solid rgba(255,85,85,0.3); margin-top: 5px;" onclick="location.reload()">
+      <div class="menu-item" data-i18n="startArchive" onclick="openWindow('archive-win'); toggleStartMenu();">📂 Открыть Архив</div>
+      <div class="menu-item" data-i18n="startOperators" onclick="openWindow('operators-win'); toggleStartMenu();">👥 Открыть Операторов</div>
+      <div class="menu-item" data-i18n="startTerminal" onclick="openWindow('terminal-win'); toggleStartMenu();">💻 Запустить Консоль</div>
+      <div class="menu-item" data-i18n="startExit" style="color: #ff5555; border-top: 1px solid rgba(255,85,85,0.3); margin-top: 5px;" onclick="location.reload()">
         🚪 Выход из системы
       </div>
     </div>
 
-    <!-- ОКНА -->
     <div id="archive-win" class="window hidden" style="top: 80px; left: 150px;">
       <div class="window-header" onmousedown="dragWindow(event, 'archive-win')">
-        <span class="window-title">📂 Архив Родоса</span>
+        <span class="window-title" data-i18n="archiveTitle">📂 Архив Родоса</span>
         <button class="close-btn" onclick="closeWindow('archive-win')">×</button>
       </div>
       <div class="window-body">
-        <h3>Записи базы данных:</h3>
+        <h3 data-i18n="archiveHeader">Записи базы данных:</h3>
         <ul>
-          <li>Проект PRTS: Статус [Активен]</li>
-          <li>Отчет по минералу Ориджиниуму</li>
-          <li>Засекреченные материалы Доктора</li>
+          <li data-i18n="archiveItem1">Проект PRTS: Статус [Активен]</li>
+          <li data-i18n="archiveItem2">Отчет по минералу Ориджиниуму</li>
+          <li data-i18n="archiveItem3">Засекреченные материалы Доктора</li>
         </ul>
       </div>
     </div>
 
     <div id="operators-win" class="window hidden" style="top: 120px; left: 220px;">
       <div class="window-header" onmousedown="dragWindow(event, 'operators-win')">
-        <span class="window-title">👥 Ростер Операторов</span>
+        <span class="window-title" data-i18n="operatorsTitle">👥 Ростер Операторов</span>
         <button class="close-btn" onclick="closeWindow('operators-win')">×</button>
       </div>
       <div class="window-body">
-        <p><b>Amiya:</b> Лидер Rhodes Island (Caster)</p>
-        <p><b>Kal'tsit:</b> Глава Медицинского Отдела (Medic)</p>
-        <p><b>Doctor:</b> Главный Стратег</p>
+        <p><b>Amiya:</b> <span data-i18n="opAmiya">Лидер Rhodes Island (Caster)</span></p>
+        <p><b>Kal'tsit:</b> <span data-i18n="opKaltsit">Глава Медицинского Отдела (Medic)</span></p>
+        <p><b>Doctor:</b> <span data-i18n="opDoctor">Главный Стратег</span></p>
       </div>
     </div>
 
     <div id="terminal-win" class="window hidden" style="top: 160px; left: 290px;">
       <div class="window-header" onmousedown="dragWindow(event, 'terminal-win')">
-        <span class="window-title">💻 PRTS Console</span>
+        <span class="window-title" data-i18n="terminalTitle">💻 PRTS Console</span>
         <button class="close-btn" onclick="closeWindow('terminal-win')">×</button>
       </div>
       <div class="window-body" style="font-family: monospace; color: #00f0ff;">
@@ -388,11 +427,19 @@
       </div>
     </div>
 
-    <!-- ТАСКБАР -->
     <div id="taskbar">
-      <button class="start-btn" onclick="toggleStartMenu(event)">PRTS OS</button>
-      <div class="search-box">
-        🔍 <input type="text" id="searchInput" placeholder="Поиск файлов..." oninput="filterDesktop()">
+      <div class="taskbar-left">
+        <button class="start-btn" onclick="toggleStartMenu(event)">PRTS OS</button>
+        <div class="search-box">
+          🔍 <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="Поиск файлов..." oninput="filterDesktop()">
+        </div>
+      </div>
+      <div class="taskbar-right">
+        <div class="lang-selector-taskbar">
+          <span class="lang-btn" data-lang="ru" onclick="setLanguage('ru')">RU</span> |
+          <span class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</span> |
+          <span class="lang-btn" data-lang="jp" onclick="setLanguage('jp')">JP</span>
+        </div>
       </div>
     </div>
   </div>
@@ -427,10 +474,10 @@
         passwordInput.value = targetPassword.substring(0, passwordProgress);
         if (passwordProgress === targetPassword.length) {
           loginBtn.classList.add('active');
-          hintText.textContent = "[ Нажмите кнопку ВХОД В СИСТЕМУ ]";
+          hintText.setAttribute('data-i18n', 'hintClick');
+          if (typeof setLanguage === 'function') setLanguage(currentLang);
         }
       }
-      // Никаких автозапусков при дальнейших нажатиях клавиш!
     });
 
     // Вход выполняется СТРОГО при клике на кнопку мышкой
@@ -441,13 +488,11 @@
       loginInput.value = targetLogin;
       passwordInput.value = targetPassword;
 
-      // Сразу подготавливаем видео оверлей
       videoOverlay.style.display = 'block';
       videoOverlay.style.opacity = '1';
 
       introVideo.currentTime = 0;
       
-      // Запускаем видео и прячем экран логина
       introVideo.play().then(() => {
         loginScreen.style.display = 'none';
       }).catch(e => {
@@ -456,7 +501,6 @@
       });
     }
 
-    // За 2 секунды до конца видео оно плавно растворяется
     introVideo.addEventListener('timeupdate', () => {
       const timeLeft = introVideo.duration - introVideo.currentTime;
 
@@ -532,5 +576,6 @@
       };
     }
   </script>
+  <script src="translations.js"></script>
 </body>
 </html>

@@ -2,13 +2,13 @@
    PRTS NETWORK & ARCHIVE SYSTEM (prts-console.js)
    ========================================================= */
 
-// 1. БАЗА ДАННЫХ РЕГИОНОВ И ОПЕРАТИВНИКОВ
+// 1. БАЗА ДАННЫХ РЕГИОНОВ, ФРАКЦИЙ И ОПЕРАТИВНИКОВ
 const terraData = {
-ursus: {
+  ursus: {
     id: "ursus",
     name: "Ursus Empire",
     code: "US-002",
-    logo: "regions/Ursus/Ursus.webp", // Путь к прозрачному логотипу
+    logo: "regions/Ursus/Ursus.webp", // Путь к локальному логотипу
     sections: {
       politics_internal: "Абсолютная монархия со сложной внутренней борьбой между военной аристократией и императорской властью. Инфицированные граждане лишены прав и используются на принудительных работах.",
       politics_external: "Экспансионистская внешняя политика. Урсус поддерживает напряженные отношения с соседними державами (Янь, Казимеж) и опирается на военную силу.",
@@ -21,7 +21,7 @@ ursus: {
         name: "Hellagur",
         role: "Guard / Ex-General",
         status: "Active (Azazel Clinic)",
-        avatar: "https://raw.githubusercontent.com/Aceship/AN-EN-Tags/master/img/avatars/char_188_helagr.png",
+        avatar: "regions/Ursus/operatives/hellagur.png",
         dossier: "Ветеран войн Урсуса и бывший генеральный офицер. Настоящий пограничник и защитник клиники Азазель для инфицированных."
       },
       {
@@ -29,7 +29,7 @@ ursus: {
         name: "Rosa (Natalya)",
         role: "Sniper / USSG Leader",
         status: "Active (Rhodes Island)",
-        avatar: "https://raw.githubusercontent.com/Aceship/AN-EN-Tags/master/img/avatars/char_197_disaster.png",
+        avatar: "regions/Ursus/operatives/rosa.png",
         dossier: "Бывшая аристократка из Чернобога, лидер Студенческой группы самопомощи Урсуса."
       },
       {
@@ -37,7 +37,7 @@ ursus: {
         name: "Zima (Sonya)",
         role: "Vanguard / USSG",
         status: "Active (Rhodes Island)",
-        avatar: "https://raw.githubusercontent.com/Aceship/AN-EN-Tags/master/img/avatars/char_115_a2.png",
+        avatar: "regions/Ursus/operatives/zima.png",
         dossier: "Закаленный в боях боец школьной группы. Известна вспыльчивым характером и владением топором."
       },
       {
@@ -45,7 +45,7 @@ ursus: {
         name: "Gummy (Lada)",
         role: "Defender / Cook",
         status: "Active (Rhodes Island)",
-        avatar: "https://raw.githubusercontent.com/Aceship/AN-EN-Tags/master/img/avatars/char_196_sunr.png",
+        avatar: "regions/Ursus/operatives/gummy.png",
         dossier: "Отвечает за снабжение и готовку в отряде. Пережила тяжелые события в Чернобоге."
       }
     ]
@@ -59,25 +59,26 @@ function initPRTSConsole() {
   const terminalWin = document.querySelector('#terminal-win .window-body');
   if (!terminalWin) return;
 
-  // Внедряем HTML-разметку системы прямо в окно консоли
+  // Шаблон всей консоли PRTS
   terminalWin.innerHTML = `
     <div id="prts-console-wrapper" style="height: 100%; display: flex; flex-direction: column; font-family: monospace;">
       
-      <!-- 1. СЕТКА РЕГИОНОВ -->
+      <!-- 1. ВЬЮ: СЕТКА РЕГИОНОВ -->
       <div id="prts-view-regions">
         <div style="color: #00f0ff; margin-bottom: 15px; font-weight: bold;">[ ВЫБЕРИТЕ РЕГИОН / ДЕРЖАВУ ]</div>
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <div class="prts-hex-card" onclick="prtsOpenRegion('ursus')">
-            <div style="font-size: 2rem;">🐻</div>
-            <div style="color: #00f0ff; font-weight: bold; margin-top: 5px;">URSUS</div>
-          </div>
+        <div id="prts-regions-grid" style="display: flex; gap: 15px; flex-wrap: wrap;">
+          <!-- Карточки регионов генерируются автоматически -->
         </div>
       </div>
 
-      <!-- 2. МЕНЮ РЕГИОНА -->
+      <!-- 2. ВЬЮ: МЕНЮ РЕГИОНА -->
       <div id="prts-view-detail" class="hidden">
         <button class="prts-btn-back" onclick="prtsShowView('prts-view-regions')">← НАЗАД К РЕГИОНАМ</button>
-        <h3 id="prts-region-title" style="color: #00f0ff; margin: 10px 0;"></h3>
+        
+        <div style="display: flex; align-items: center; gap: 12px; margin: 10px 0;">
+          <img id="prts-region-logo" src="" style="width: 35px; height: 35px; object-fit: contain;">
+          <h3 id="prts-region-title" style="color: #00f0ff; margin: 0;"></h3>
+        </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
           <button class="prts-nav-btn" onclick="prtsShowSection('politics_internal')">🏛️ Внутренняя политика</button>
@@ -91,15 +92,15 @@ function initPRTSConsole() {
         </div>
       </div>
 
-      <!-- 3. ДРЕВО ОПЕРАТИВНИКОВ -->
+      <!-- 3. ВЬЮ: ДРЕВО ОПЕРАТИВНИКОВ -->
       <div id="prts-view-tree" class="hidden" style="position: relative; flex-grow: 1;">
         <button class="prts-btn-back" onclick="prtsShowView('prts-view-detail')">← НАЗАД В МЕНЮ РЕГИОНА</button>
         <div id="prts-tree-container" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;"></div>
 
-        <!-- ДОСЬЕ -->
+        <!-- ВЫПЛЫВАЮЩЕЕ ДОСЬЕ -->
         <div id="prts-dossier" class="hidden" style="position: absolute; right: 0; top: 0; bottom: 0; width: 240px; background: rgba(5,15,25,0.98); border: 1px solid #00f0ff; padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; box-shadow: -5px 0 15px rgba(0,0,0,0.8); z-index: 10;">
           <div style="display: flex; gap: 10px; align-items: center;">
-            <img id="prts-d-img" src="" style="width: 50px; height: 50px; border: 1px solid #00f0ff; border-radius: 4px;">
+            <img id="prts-d-img" src="" style="width: 50px; height: 50px; border: 1px solid #00f0ff; border-radius: 4px; object-fit: cover;">
             <div>
               <div id="prts-d-name" style="color: #00f0ff; font-weight: bold; font-size: 0.85rem;"></div>
               <div id="prts-d-role" style="color: #a0c0d0; font-size: 0.7rem;"></div>
@@ -114,10 +115,11 @@ function initPRTSConsole() {
     </div>
   `;
 
-  // Добавляем необходимые CSS стили для элементов консоли
   injectPRTSStyles();
+  renderRegionsGrid();
 }
 
+// 3. СТИЛИ
 function injectPRTSStyles() {
   if (document.getElementById('prts-console-styles')) return;
   const style = document.createElement('style');
@@ -157,7 +159,26 @@ function injectPRTSStyles() {
   document.head.appendChild(style);
 }
 
-// 3. ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ И ВЫВОДА
+// 4. ОТРЕСОВКА СОТ РЕГИОНОВ
+function renderRegionsGrid() {
+  const grid = document.getElementById('prts-regions-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  Object.keys(terraData).forEach(key => {
+    const reg = terraData[key];
+    const card = document.createElement('div');
+    card.className = 'prts-hex-card';
+    card.onclick = () => prtsOpenRegion(reg.id);
+    card.innerHTML = `
+      <img src="${reg.logo}" alt="${reg.name}" style="width: 40px; height: 40px; object-fit: contain;">
+      <div style="color: #00f0ff; font-weight: bold; margin-top: 4px; font-size: 0.75rem;">${reg.name.split(' ')[0].toUpperCase()}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// 5. ЛОГИКА НАВИГАЦИИ
 function prtsShowView(viewId) {
   document.getElementById('prts-view-regions').classList.add('hidden');
   document.getElementById('prts-view-detail').classList.add('hidden');
@@ -168,6 +189,8 @@ function prtsShowView(viewId) {
 function prtsOpenRegion(regionId) {
   currentRegion = terraData[regionId];
   if (!currentRegion) return;
+  
+  document.getElementById('prts-region-logo').src = currentRegion.logo;
   document.getElementById('prts-region-title').innerText = currentRegion.name + " [" + currentRegion.code + "]";
   document.getElementById('prts-info-box').innerText = "Выберите раздел выше для загрузки данных из архива PRTS...";
   prtsShowView('prts-view-detail');
@@ -188,7 +211,7 @@ function prtsShowTree() {
     node.className = 'prts-op-node';
     node.onclick = () => prtsOpenDossier(op);
     node.innerHTML = `
-      <img src="${op.avatar}" style="width: 45px; height: 45px; border-radius: 3px; object-fit: cover;">
+      <img src="${op.avatar}" style="width: 45px; height: 45px; border-radius: 3px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/45?text=OP'">
       <div style="font-size: 0.6rem; color: #00f0ff; margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${op.name}</div>
     `;
     container.appendChild(node);
@@ -210,5 +233,5 @@ function prtsCloseDossier() {
   document.getElementById('prts-dossier').classList.add('hidden');
 }
 
-// Запускаем автоматическую сборку после загрузки страницы
+// Запуск при загрузке
 document.addEventListener('DOMContentLoaded', initPRTSConsole);

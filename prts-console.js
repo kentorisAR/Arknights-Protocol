@@ -2,78 +2,79 @@
    PRTS NETWORK & ARCHIVE SYSTEM (prts-console.js)
    ========================================================= */
 
-// 1. БАЗА ДАННЫХ РЕГИОНОВ, ФРАКЦИЙ И ОПЕРАТИВНИКОВ
-const terraData = {
-  ursus: {
-    id: "ursus",
-    name: "Ursus Empire",
-    code: "US-002",
-    logo: "regions/Ursus/Ursus.webp", // Путь к локальному логотипу
-    sections: {
-      politics_internal: "Абсолютная монархия со сложной внутренней борьбой между военной аристократией и императорской властью. Инфицированные граждане лишены прав и используются на принудительных работах.",
-      politics_external: "Экспансионистская внешняя политика. Урсус поддерживает напряженные отношения с соседними державами (Янь, Казимеж) и опирается на военную силу.",
-      government: "Император Фёдор и совет военных генералов (Военная фракция / Старая гвардия).",
-      factions: ["Ursus Student Self-Reliance Group", "Chernobog Patrol", "Reunion (Зародилось в Урсусе)"]
-    },
-    operators: [
-      {
-        id: "hellagur",
-        name: "Hellagur",
-        role: "Guard / Ex-General",
-        status: "Active (Azazel Clinic)",
-        avatar: "regions/Ursus/operatives/hellagur.png",
-        dossier: "Ветеран войн Урсуса и бывший генеральный офицер. Настоящий пограничник и защитник клиники Азазель для инфицированных."
-      },
-      {
-        id: "rosa",
-        name: "Rosa (Natalya)",
-        role: "Sniper / USSG Leader",
-        status: "Active (Rhodes Island)",
-        avatar: "regions/Ursus/operatives/rosa.png",
-        dossier: "Бывшая аристократка из Чернобога, лидер Студенческой группы самопомощи Урсуса."
-      },
-      {
-        id: "zima",
-        name: "Zima (Sonya)",
-        role: "Vanguard / USSG",
-        status: "Active (Rhodes Island)",
-        avatar: "regions/Ursus/operatives/zima.png",
-        dossier: "Закаленный в боях боец школьной группы. Известна вспыльчивым характером и владением топором."
-      },
-      {
-        id: "gummy",
-        name: "Gummy (Lada)",
-        role: "Defender / Cook",
-        status: "Active (Rhodes Island)",
-        avatar: "regions/Ursus/operatives/gummy.png",
-        dossier: "Отвечает за снабжение и готовку в отряде. Пережила тяжелые события в Чернобоге."
-      }
-    ]
-  }
-};
+function getPRTSText(key) {
+  const lang = window.currentLang || 'ru';
+  return (consoleTranslations[lang] && consoleTranslations[lang][key]) || consoleTranslations['ru'][key] || key;
+}
 
-let currentRegion = null;
+function getTerraData() {
+  return {
+    ursus: {
+      id: "ursus",
+      name: getPRTSText('ursus_name'),
+      code: "US-002",
+      logo: "regions/Ursus/Ursus.webp",
+      sections: {
+        politics_internal: getPRTSText('ursus_pol_int'),
+        politics_external: getPRTSText('ursus_pol_ext'),
+        government: getPRTSText('ursus_gov')
+      },
+      operators: [
+        {
+          id: "hellagur",
+          name: "Hellagur",
+          role: "Guard / Ex-General",
+          status: "Active (Azazel Clinic)",
+          avatar: "regions/Ursus/operatives/hellagur.png",
+          dossier: "Ветеран войн Урсуса и бывший генеральный офицер. Защитник клиники Азазель."
+        },
+        {
+          id: "rosa",
+          name: "Rosa (Natalya)",
+          role: "Sniper / USSG Leader",
+          status: "Active (Rhodes Island)",
+          avatar: "regions/Ursus/operatives/rosa.png",
+          dossier: "Бывшая аристократка из Чернобога, лидер Студенческой группы самопомощи Урсуса."
+        },
+        {
+          id: "zima",
+          name: "Zima (Sonya)",
+          role: "Vanguard / USSG",
+          status: "Active (Rhodes Island)",
+          avatar: "regions/Ursus/operatives/zima.png",
+          dossier: "Закаленный боец школьной группы Урсуса."
+        },
+        {
+          id: "gummy",
+          name: "Gummy (Lada)",
+          role: "Defender / Cook",
+          status: "Active (Rhodes Island)",
+          avatar: "regions/Ursus/operatives/gummy.png",
+          dossier: "Отвечает за снабжение и готовку в отряде."
+        }
+      ]
+    }
+  };
+}
 
-// 2. ИНИЦИАЛИЗАЦИЯ ИНТЕРФЕЙСА ВНУТРИ ОКНА
+let currentRegionId = null;
+
 function initPRTSConsole() {
   const terminalWin = document.querySelector('#terminal-win .window-body');
   if (!terminalWin) return;
 
-  // Шаблон всей консоли PRTS
   terminalWin.innerHTML = `
     <div id="prts-console-wrapper" style="height: 100%; display: flex; flex-direction: column; font-family: monospace;">
       
-      <!-- 1. ВЬЮ: СЕТКА РЕГИОНОВ -->
+      <!-- 1. СЕТКА РЕГИОНОВ -->
       <div id="prts-view-regions">
-        <div style="color: #00f0ff; margin-bottom: 15px; font-weight: bold;">[ ВЫБЕРИТЕ РЕГИОН / ДЕРЖАВУ ]</div>
-        <div id="prts-regions-grid" style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <!-- Карточки регионов генерируются автоматически -->
-        </div>
+        <div id="prts-title-select" style="color: #00f0ff; margin-bottom: 15px; font-weight: bold;">${getPRTSText('select_region')}</div>
+        <div id="prts-regions-grid" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
       </div>
 
-      <!-- 2. ВЬЮ: МЕНЮ РЕГИОНА -->
+      <!-- 2. МЕНЮ РЕГИОНА -->
       <div id="prts-view-detail" class="hidden">
-        <button class="prts-btn-back" onclick="prtsShowView('prts-view-regions')">← НАЗАД К РЕГИОНАМ</button>
+        <button class="prts-btn-back" id="btn-back-reg" onclick="prtsShowView('prts-view-regions')">${getPRTSText('btn_back_regions')}</button>
         
         <div style="display: flex; align-items: center; gap: 12px; margin: 10px 0;">
           <img id="prts-region-logo" src="" style="width: 35px; height: 35px; object-fit: contain;">
@@ -81,23 +82,23 @@ function initPRTSConsole() {
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-          <button class="prts-nav-btn" onclick="prtsShowSection('politics_internal')">🏛️ Внутренняя политика</button>
-          <button class="prts-nav-btn" onclick="prtsShowSection('politics_external')">🌐 Внешняя политика</button>
-          <button class="prts-nav-btn" onclick="prtsShowSection('government')">👑 Власть и Правительство</button>
-          <button class="prts-nav-btn" onclick="prtsShowTree()">👥 Оперативники и Персонажи</button>
+          <button class="prts-nav-btn" id="btn-pol-int" onclick="prtsShowSection('politics_internal')">${getPRTSText('btn_internal_pol')}</button>
+          <button class="prts-nav-btn" id="btn-pol-ext" onclick="prtsShowSection('politics_external')">${getPRTSText('btn_external_pol')}</button>
+          <button class="prts-nav-btn" id="btn-gov" onclick="prtsShowSection('government')">${getPRTSText('btn_gov')}</button>
+          <button class="prts-nav-btn" id="btn-ops" onclick="prtsShowTree()">${getPRTSText('btn_ops')}</button>
         </div>
 
         <div id="prts-info-box" style="background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0,240,255,0.3); padding: 10px; font-size: 0.8rem; color: #d8ecf8; min-height: 80px; border-radius: 4px;">
-          Выберите раздел выше для загрузки данных из архива PRTS...
+          ${getPRTSText('info_placeholder')}
         </div>
       </div>
 
-      <!-- 3. ВЬЮ: ДРЕВО ОПЕРАТИВНИКОВ -->
+      <!-- 3. ДРЕВО ОПЕРАТИВНИКОВ -->
       <div id="prts-view-tree" class="hidden" style="position: relative; flex-grow: 1;">
-        <button class="prts-btn-back" onclick="prtsShowView('prts-view-detail')">← НАЗАД В МЕНЮ РЕГИОНА</button>
+        <button class="prts-btn-back" id="btn-back-det" onclick="prtsShowView('prts-view-detail')">${getPRTSText('btn_back_detail')}</button>
         <div id="prts-tree-container" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;"></div>
 
-        <!-- ВЫПЛЫВАЮЩЕЕ ДОСЬЕ -->
+        <!-- ДОСЬЕ -->
         <div id="prts-dossier" class="hidden" style="position: absolute; right: 0; top: 0; bottom: 0; width: 240px; background: rgba(5,15,25,0.98); border: 1px solid #00f0ff; padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; box-shadow: -5px 0 15px rgba(0,0,0,0.8); z-index: 10;">
           <div style="display: flex; gap: 10px; align-items: center;">
             <img id="prts-d-img" src="" style="width: 50px; height: 50px; border: 1px solid #00f0ff; border-radius: 4px; object-fit: cover;">
@@ -108,7 +109,7 @@ function initPRTSConsole() {
           </div>
           <div id="prts-d-status" style="font-size: 0.65rem; color: #00f0ff;"></div>
           <div id="prts-d-text" style="font-size: 0.7rem; color: #d8ecf8; line-height: 1.3;"></div>
-          <button class="prts-btn-back" style="margin-top: auto; width: 100%; text-align: center;" onclick="prtsCloseDossier()">Закрыть</button>
+          <button class="prts-btn-back" id="btn-close-dos" style="margin-top: auto; width: 100%; text-align: center;" onclick="prtsCloseDossier()">${getPRTSText('close_dossier')}</button>
         </div>
       </div>
 
@@ -119,7 +120,6 @@ function initPRTSConsole() {
   renderRegionsGrid();
 }
 
-// 3. СТИЛИ
 function injectPRTSStyles() {
   if (document.getElementById('prts-console-styles')) return;
   const style = document.createElement('style');
@@ -127,28 +127,24 @@ function injectPRTSStyles() {
   style.innerHTML = `
     .prts-hex-card {
       width: 110px; height: 100px;
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.4);
+      background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.4);
       clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.2s;
     }
     .prts-hex-card:hover { background: rgba(0, 240, 255, 0.3); transform: scale(1.05); }
-    
     .prts-btn-back {
       background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff;
       color: #00f0ff; padding: 4px 8px; font-family: monospace; font-size: 0.75rem;
       cursor: pointer; display: inline-block; transition: all 0.2s;
     }
     .prts-btn-back:hover { background: #00f0ff; color: #000; }
-
     .prts-nav-btn {
       background: rgba(0, 30, 50, 0.8); border: 1px solid rgba(0, 240, 255, 0.4);
       color: #00f0ff; padding: 8px; font-family: monospace; font-size: 0.75rem;
       text-align: left; cursor: pointer; transition: all 0.2s;
     }
     .prts-nav-btn:hover { background: rgba(0, 240, 255, 0.2); border-color: #00f0ff; }
-
     .prts-op-node {
       width: 65px; height: 80px; background: rgba(0, 20, 35, 0.9);
       border: 1px solid #00f0ff; border-radius: 4px; padding: 4px;
@@ -159,14 +155,14 @@ function injectPRTSStyles() {
   document.head.appendChild(style);
 }
 
-// 4. ОТРЕСОВКА СОТ РЕГИОНОВ
 function renderRegionsGrid() {
   const grid = document.getElementById('prts-regions-grid');
   if (!grid) return;
   grid.innerHTML = '';
+  const data = getTerraData();
 
-  Object.keys(terraData).forEach(key => {
-    const reg = terraData[key];
+  Object.keys(data).forEach(key => {
+    const reg = data[key];
     const card = document.createElement('div');
     card.className = 'prts-hex-card';
     card.onclick = () => prtsOpenRegion(reg.id);
@@ -178,7 +174,6 @@ function renderRegionsGrid() {
   });
 }
 
-// 5. ЛОГИКА НАВИГАЦИИ
 function prtsShowView(viewId) {
   document.getElementById('prts-view-regions').classList.add('hidden');
   document.getElementById('prts-view-detail').classList.add('hidden');
@@ -187,26 +182,29 @@ function prtsShowView(viewId) {
 }
 
 function prtsOpenRegion(regionId) {
-  currentRegion = terraData[regionId];
-  if (!currentRegion) return;
+  currentRegionId = regionId;
+  const reg = getTerraData()[regionId];
+  if (!reg) return;
   
-  document.getElementById('prts-region-logo').src = currentRegion.logo;
-  document.getElementById('prts-region-title').innerText = currentRegion.name + " [" + currentRegion.code + "]";
-  document.getElementById('prts-info-box').innerText = "Выберите раздел выше для загрузки данных из архива PRTS...";
+  document.getElementById('prts-region-logo').src = reg.logo;
+  document.getElementById('prts-region-title').innerText = reg.name + " [" + reg.code + "]";
+  document.getElementById('prts-info-box').innerText = getPRTSText('info_placeholder');
   prtsShowView('prts-view-detail');
 }
 
 function prtsShowSection(sectionKey) {
-  if (!currentRegion) return;
-  document.getElementById('prts-info-box').innerText = currentRegion.sections[sectionKey] || "Данные отсутствуют.";
+  if (!currentRegionId) return;
+  const reg = getTerraData()[currentRegionId];
+  document.getElementById('prts-info-box').innerText = reg.sections[sectionKey] || "N/A";
 }
 
 function prtsShowTree() {
-  if (!currentRegion) return;
+  if (!currentRegionId) return;
+  const reg = getTerraData()[currentRegionId];
   const container = document.getElementById('prts-tree-container');
   container.innerHTML = '';
 
-  currentRegion.operators.forEach(op => {
+  reg.operators.forEach(op => {
     const node = document.createElement('div');
     node.className = 'prts-op-node';
     node.onclick = () => prtsOpenDossier(op);
@@ -224,7 +222,7 @@ function prtsOpenDossier(op) {
   document.getElementById('prts-d-img').src = op.avatar;
   document.getElementById('prts-d-name').innerText = op.name;
   document.getElementById('prts-d-role').innerText = op.role;
-  document.getElementById('prts-d-status').innerText = "Статус: " + op.status;
+  document.getElementById('prts-d-status').innerText = getPRTSText('status') + op.status;
   document.getElementById('prts-d-text').innerText = op.dossier;
   document.getElementById('prts-dossier').classList.remove('hidden');
 }
@@ -233,5 +231,10 @@ function prtsCloseDossier() {
   document.getElementById('prts-dossier').classList.add('hidden');
 }
 
-// Запуск при загрузке
+// Переключение языка при клике на RU / EN / JP в панели
+document.addEventListener('languageChanged', () => {
+  initPRTSConsole();
+  if (currentRegionId) prtsOpenRegion(currentRegionId);
+});
+
 document.addEventListener('DOMContentLoaded', initPRTSConsole);

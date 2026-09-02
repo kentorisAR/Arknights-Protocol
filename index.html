@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>PRTS // System Login & Desktop</title>
+  <style>
+    * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      color: #fff;
+    }
+
+    /* --- ЭКРАН ЛОГИНА --- */
+    #login-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #080e14 url('wallpaper.jpg') no-repeat center center / cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    .login-box {
+      background: rgba(10, 20, 30, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 340px;
+      text-align: center;
+    }
+
+    .login-box h2 {
+      color: #00f0ff;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 2px;
+      font-size: 1.2rem;
+    }
+
+    .login-input {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      padding: 10px;
+      color: #00f0ff;
+      border-radius: 4px;
+      outline: none;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #005580, #00f0ff);
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover, .login-btn.active {
+      box-shadow: 0 0 20px rgba(0, 240, 255, 1);
+      filter: brightness(1.3);
+    }
+
+    .hint-text {
+      font-size: 0.75rem;
+      color: #00f0ff;
+      opacity: 0.7;
+      font-family: monospace;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* --- ВИДЕО ZAСТАВКА --- */
+    #video-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #000;
+      z-index: 2500;
+      display: none;
+      opacity: 1;
+      transition: opacity 1.5s ease-out;
+    }
+
+    #intro-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* --- РАБОЧИЙ СТОЛ --- */
+    #desktop-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #080e14 url('wallpaper.jpg') no-repeat center center / cover;
+      z-index: 1000;
+    }
+
+    .crt-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+      background-size: 100% 4px;
+      z-index: 1010;
+      pointer-events: none;
+    }
+
+    #desktop {
+      width: 100vw;
+      height: calc(100vh - 45px);
+      padding: 25px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 100px);
+      grid-template-rows: repeat(auto-fill, 100px);
+      grid-auto-flow: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1020;
+    }
+
+    .icon {
+      width: 90px; height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .icon:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    .icon-img { font-size: 2.5rem; margin-bottom: 4px; }
+    .icon-title {
+      font-size: 0.8rem;
+      color: #e0f7fc;
+      text-shadow: 0 1px 4px #000, 0 0 2px #000;
+      text-align: center;
+    }
+
+    /* ТАСКБАР */
+    #taskbar {
+      height: 45px;
+      width: 100vw;
+      background: rgba(10, 22, 35, 0.8);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 240, 255, 0.4);
+      position: fixed;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      z-index: 2000;
+      box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.7);
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, #005580, #00f0ff);
+      border: 1px solid #00f0ff;
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      margin-right: 15px;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .start-btn:hover {
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
+      filter: brightness(1.2);
+    }
+
+    .search-box {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 4px;
+      padding: 4px 10px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #00f0ff;
+      font-size: 0.85rem;
+      width: 180px;
+    }
+
+    /* МЕНЮ ПУСК */
+    #start-menu {
+      position: fixed;
+      bottom: 50px; left: 15px;
+      width: 280px;
+      background: rgba(8, 16, 26, 0.95);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      z-index: 2100;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-item {
+      padding: 10px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: #00f0ff;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: rgba(0, 240, 255, 0.5);
+    }
+
+    /* ОКНА */
+    .window {
+      position: absolute;
+      width: 520px; height: 350px;
+      background: rgba(10, 20, 30, 0.92);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(0, 240, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1050;
+    }
+
+    .window-header {
+      background: linear-gradient(90deg, rgba(0, 40, 60, 0.95), rgba(0, 80, 120, 0.95));
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .window-title { font-size: 0.9rem; color: #00f0ff; font-weight: bold; }
+    .close-btn {
+      background: #ff4d4d;
+      border: none;
+      color: #fff;
+      width: 22px; height: 22px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .window-body {
+      padding: 15px;
+      flex-grow: 1;
+      overflow-y: auto;
+      color: #d8ecf8;
+      font-size: 0.95rem;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. ЭКРАН ВХОДА -->
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>PRTS ARCHIVE ACCESS</h2>
+      <input type="text" id="login-input" class="login-input" placeholder="Логин" readonly>
+      <input type="password" id="password-input" class="login-input" placeholder="Пароль" readonly>
+      <button id="login-btn" class="login-btn" onclick="startLoginSequence()">ВХОД В СИСТЕМУ</button>
+      <div id="hint-text" class="hint-text">[ Нажимайте любые клавиши для ввода ]</div>
+    </div>
+  </div>
+
+  <!-- 2. ВИДЕО-ЗАСТАВКА -->
+  <div id="video-overlay">
+    <video id="intro-video" preload="auto" playsinline>
+      <source src="Welcome Back, Doctor..mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- 3. РАБОЧИЙ СТОЛ -->
+  <div id="desktop-container">
+    <div class="crt-overlay"></div>
+
+    <div id="desktop">
+      <div class="icon" onclick="openWindow('archive-win')" data-name="архив данных rhodes island">
+        <div class="icon-img">📁</div>
+        <div class="icon-title">Архив Данных</div>
+      </div>
+      <div class="icon" onclick="openWindow('operators-win')" data-name="операторы ростер">
+        <div class="icon-img">👥</div>
+        <div class="icon-title">Операторы</div>
+      </div>
+      <div class="icon" onclick="openWindow('terminal-win')" data-name="консоль терминал prts">
+        <div class="icon-img">💻</div>
+        <div class="icon-title">Терминал PRTS</div>
+      </div>
+    </div>
+
+    <!-- МЕНЮ ПУСК -->
+    <div id="start-menu" class="hidden">
+      <div style="font-weight: bold; border-bottom: 1px solid #00f0ff; padding-bottom: 5px; margin-bottom: 5px; color: #fff;">
+        PRTS SYSTEM MENU
+      </div>
+      <div class="menu-item" onclick="openWindow('archive-win'); toggleStartMenu();">📂 Открыть Архив</div>
+      <div class="menu-item" onclick="openWindow('operators-win'); toggleStartMenu();">👥 Открыть Операторов</div>
+      <div class="menu-item" onclick="openWindow('terminal-win'); toggleStartMenu();">💻 Запустить Консоль</div>
+      <div class="menu-item" style="color: #ff5555; border-top: 1px solid rgba(255,85,85,0.3); margin-top: 5px;" onclick="location.reload()">
+        🚪 Выход из системы
+      </div>
+    </div>
+
+    <!-- ОКНА -->
+    <div id="archive-win" class="window hidden" style="top: 80px; left: 150px;">
+      <div class="window-header" onmousedown="dragWindow(event, 'archive-win')">
+        <span class="window-title">📂 Архив Родоса</span>
+        <button class="close-btn" onclick="closeWindow('archive-win')">×</button>
+      </div>
+      <div class="window-body">
+        <h3>Записи базы данных:</h3>
+        <ul>
+          <li>Проект PRTS: Статус [Активен]</li>
+          <li>Отчет по минералу Ориджиниуму</li>
+          <li>Засекреченные материалы Доктора</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="operators-win" class="window hidden" style="top: 120px; left: 220px;">
+      <div class="window-header" onmousedown="dragWindow(event, 'operators-win')">
+        <span class="window-title">👥 Ростер Операторов</span>
+        <button class="close-btn" onclick="closeWindow('operators-win')">×</button>
+      </div>
+      <div class="window-body">
+        <p><b>Amiya:</b> Лидер Rhodes Island (Caster)</p>
+        <p><b>Kal'tsit:</b> Глава Медицинского Отдела (Medic)</p>
+        <p><b>Doctor:</b> Главный Стратег</p>
+      </div>
+    </div>
+
+    <div id="terminal-win" class="window hidden" style="top: 160px; left: 290px;">
+      <div class="window-header" onmousedown="dragWindow(event, 'terminal-win')">
+        <span class="window-title">💻 PRTS Console</span>
+        <button class="close-btn" onclick="closeWindow('terminal-win')">×</button>
+      </div>
+      <div class="window-body" style="font-family: monospace; color: #00f0ff;">
+        > SYSTEM ONLINE<br>
+        > ACCESS LEVEL: MAXIMUM<br>
+        > WAITING FOR COMMANDS...
+      </div>
+    </div>
+
+    <!-- ТАСКБАР -->
+    <div id="taskbar">
+      <button class="start-btn" onclick="toggleStartMenu(event)">PRTS OS</button>
+      <div class="search-box">
+        🔍 <input type="text" id="searchInput" placeholder="Поиск файлов..." oninput="filterDesktop()">
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgm-desktop" src="[Arknights OST] Main Theme BGM (1Hour Loop).mp3" loop preload="auto"></audio>
+
+  <script>
+    const loginScreen = document.getElementById('login-screen');
+    const videoOverlay = document.getElementById('video-overlay');
+    const introVideo = document.getElementById('intro-video');
+    const bgmDesktop = document.getElementById('bgm-desktop');
+    const loginInput = document.getElementById('login-input');
+    const passwordInput = document.getElementById('password-input');
+    const loginBtn = document.getElementById('login-btn');
+    const hintText = document.getElementById('hint-text');
+
+    const targetLogin = "Doctor";
+    const targetPassword = "••••••••";
+    let loginProgress = 0;
+    let passwordProgress = 0;
+    let isTransitioning = false;
+
+    // Ввод исключительно клавишами
+    document.addEventListener('keydown', (e) => {
+      if (isTransitioning) return;
+
+      if (loginProgress < targetLogin.length) {
+        loginProgress++;
+        loginInput.value = targetLogin.substring(0, loginProgress);
+      } else if (passwordProgress < targetPassword.length) {
+        passwordProgress++;
+        passwordInput.value = targetPassword.substring(0, passwordProgress);
+        if (passwordProgress === targetPassword.length) {
+          loginBtn.classList.add('active');
+          hintText.textContent = "[ Нажмите кнопку ВХОД В СИСТЕМУ ]";
+        }
+      }
+      // Никаких автозапусков при дальнейших нажатиях клавиш!
+    });
+
+    // Вход выполняется СТРОГО при клике на кнопку мышкой
+    function startLoginSequence() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      loginInput.value = targetLogin;
+      passwordInput.value = targetPassword;
+
+      // Сразу подготавливаем видео оверлей
+      videoOverlay.style.display = 'block';
+      videoOverlay.style.opacity = '1';
+
+      introVideo.currentTime = 0;
+      
+      // Запускаем видео и прячем экран логина
+      introVideo.play().then(() => {
+        loginScreen.style.display = 'none';
+      }).catch(e => {
+        console.log('Video play error:', e);
+        loginScreen.style.display = 'none';
+      });
+    }
+
+    // За 2 секунды до конца видео оно плавно растворяется
+    introVideo.addEventListener('timeupdate', () => {
+      const timeLeft = introVideo.duration - introVideo.currentTime;
+
+      if (timeLeft <= 2 && videoOverlay.style.opacity !== '0') {
+        videoOverlay.style.opacity = '0';
+
+        if (bgmDesktop.paused) {
+          bgmDesktop.volume = 0.4;
+          bgmDesktop.play().catch(e => console.log('Audio error:', e));
+        }
+      }
+    });
+
+    introVideo.addEventListener('ended', () => {
+      videoOverlay.style.display = 'none';
+    });
+
+    // Рабочий стол
+    function toggleStartMenu(event) {
+      if (event) event.stopPropagation();
+      const menu = document.getElementById('start-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('start-menu');
+      if (!menu.classList.contains('hidden') && !e.target.closest('#start-menu') && !e.target.closest('.start-btn')) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function openWindow(id) {
+      const win = document.getElementById(id);
+      win.classList.remove('hidden');
+      document.querySelectorAll('.window').forEach(w => w.style.zIndex = 1050);
+      win.style.zIndex = 1100;
+    }
+
+    function closeWindow(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function filterDesktop() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('.icon').forEach(icon => {
+        const name = icon.getAttribute('data-name');
+        icon.style.display = name.includes(query) ? 'flex' : 'none';
+      });
+    }
+
+    function dragWindow(e, windowId) {
+      const win = document.getElementById(windowId);
+      document.querySelectorAll('.window').forEach(w => w.style.zIndex = 1050);
+      win.style.zIndex = 1100;
+
+      let shiftX = e.clientX - win.getBoundingClientRect().left;
+      let shiftY = e.clientY - win.getBoundingClientRect().top;
+
+      function moveAt(pageX, pageY) {
+        win.style.left = pageX - shiftX + 'px';
+        win.style.top = pageY - shiftY + 'px';
+      }
+
+      function onMouseMove(event) {
+        moveAt(event.pageX, event.pageY);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+
+      document.onmouseup = function() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.onmouseup = null;
+      };
+    }
+  </script>
+</body>
+</html>

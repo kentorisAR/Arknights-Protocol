@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>PRTS // Virtual OS Desktop</title>
+  <style>
+    * { box-sizing: border-box; user-select: none; }
+    
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #080e14 url('wallpaper.jpg') no-repeat center center / cover;
+      color: #fff;
+    }
+
+    #fade-in-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000;
+      opacity: 1;
+      pointer-events: none;
+      transition: opacity 1.5s ease-out;
+      z-index: 9999;
+    }
+
+    .crt-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+      background-size: 100% 4px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* РАБОЧИЙ СТОЛ */
+    #desktop {
+      width: 100vw;
+      height: calc(100vh - 45px);
+      padding: 25px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 100px);
+      grid-template-rows: repeat(auto-fill, 100px);
+      grid-auto-flow: column;
+      gap: 15px;
+      position: relative;
+      z-index: 20;
+    }
+
+    .icon {
+      width: 90px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .icon:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    .icon-img { font-size: 2.5rem; margin-bottom: 4px; }
+    .icon-title {
+      font-size: 0.8rem;
+      color: #e0f7fc;
+      text-shadow: 0 1px 4px #000, 0 0 2px #000;
+      text-align: center;
+    }
+
+    /* ТАСКБАР */
+    #taskbar {
+      height: 45px;
+      width: 100vw;
+      background: rgba(10, 22, 35, 0.8);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 240, 255, 0.4);
+      position: fixed;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      z-index: 1000;
+      box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.7);
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, #005580, #00f0ff);
+      border: 1px solid #00f0ff;
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      margin-right: 15px;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .start-btn:hover {
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
+      filter: brightness(1.2);
+    }
+
+    .search-box {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 4px;
+      padding: 4px 10px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #00f0ff;
+      font-size: 0.85rem;
+      width: 180px;
+    }
+
+    /* МЕНЮ ПУСК */
+    #start-menu {
+      position: fixed;
+      bottom: 50px;
+      left: 15px;
+      width: 280px;
+      background: rgba(8, 16, 26, 0.95);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-item {
+      padding: 10px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: #00f0ff;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: rgba(0, 240, 255, 0.5);
+    }
+
+    /* ОКНА ПРОГРАММ */
+    .window {
+      position: absolute;
+      width: 520px;
+      height: 350px;
+      background: rgba(10, 20, 30, 0.92);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(0, 240, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 100;
+    }
+
+    .window-header {
+      background: linear-gradient(90deg, rgba(0, 40, 60, 0.95), rgba(0, 80, 120, 0.95));
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .window-title { font-size: 0.9rem; color: #00f0ff; font-weight: bold; }
+    .close-btn {
+      background: #ff4d4d;
+      border: none;
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+      line-height: 18px;
+    }
+
+    .window-body {
+      padding: 15px;
+      flex-grow: 1;
+      overflow-y: auto;
+      color: #d8ecf8;
+      font-size: 0.95rem;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div id="fade-in-overlay"></div>
+  <div class="crt-overlay"></div>
+
+  <!-- РАБОЧИЙ СТОЛ -->
+  <div id="desktop">
+    <div class="icon" onclick="openWindow('archive-win')" data-name="архив данных rhodes island">
+      <div class="icon-img">📁</div>
+      <div class="icon-title">Архив Данных</div>
+    </div>
+    <div class="icon" onclick="openWindow('operators-win')" data-name="операторы ростер">
+      <div class="icon-img">👥</div>
+      <div class="icon-title">Операторы</div>
+    </div>
+    <div class="icon" onclick="openWindow('terminal-win')" data-name="консоль терминал prts">
+      <div class="icon-img">💻</div>
+      <div class="icon-title">Терминал PRTS</div>
+    </div>
+  </div>
+
+  <!-- МЕНЮ ПУСК -->
+  <div id="start-menu" class="hidden">
+    <div style="font-weight: bold; border-bottom: 1px solid #00f0ff; padding-bottom: 5px; margin-bottom: 5px; color: #fff;">
+      PRTS SYSTEM MENU
+    </div>
+    <div class="menu-item" onclick="openWindow('archive-win'); toggleStartMenu();">📂 Открыть Архив</div>
+    <div class="menu-item" onclick="openWindow('operators-win'); toggleStartMenu();">👥 Открыть Операторов</div>
+    <div class="menu-item" onclick="openWindow('terminal-win'); toggleStartMenu();">💻 Запустить Консоль</div>
+    <div class="menu-item" style="color: #ff5555; border-top: 1px solid rgba(255,85,85,0.3); margin-top: 5px;" onclick="location.href='index.html'">
+      🚪 Выход из системы
+    </div>
+  </div>
+
+  <!-- ОКНА -->
+  <div id="archive-win" class="window hidden" style="top: 80px; left: 150px;">
+    <div class="window-header" onmousedown="dragWindow(event, 'archive-win')">
+      <span class="window-title">📂 Архив Родоса</span>
+      <button class="close-btn" onclick="closeWindow('archive-win')">×</button>
+    </div>
+    <div class="window-body">
+      <h3>Записи базы данных:</h3>
+      <ul>
+        <li>Проект PRTS: Статус [Активен]</li>
+        <li>Отчет по минералу Ориджиниуму</li>
+        <li>Засекреченные материалы Доктора</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="operators-win" class="window hidden" style="top: 120px; left: 220px;">
+    <div class="window-header" onmousedown="dragWindow(event, 'operators-win')">
+      <span class="window-title">👥 Ростер Операторов</span>
+      <button class="close-btn" onclick="closeWindow('operators-win')">×</button>
+    </div>
+    <div class="window-body">
+      <p><b>Amiya:</b> Лидер Rhodes Island (Caster)</p>
+      <p><b>Kal'tsit:</b> Глава Медицинского Отдела (Medic)</p>
+      <p><b>Doctor:</b> Главный Стратег</p>
+    </div>
+  </div>
+
+  <div id="terminal-win" class="window hidden" style="top: 160px; left: 290px;">
+    <div class="window-header" onmousedown="dragWindow(event, 'terminal-win')">
+      <span class="window-title">💻 PRTS Console</span>
+      <button class="close-btn" onclick="closeWindow('terminal-win')">×</button>
+    </div>
+    <div class="window-body" style="font-family: monospace; color: #00f0ff;">
+      > SYSTEM ONLINE<br>
+      > ACCESS LEVEL: MAXIMUM<br>
+      > WAITING FOR COMMANDS...
+    </div>
+  </div>
+
+  <!-- ТАСКБАР -->
+  <div id="taskbar">
+    <button class="start-btn" onclick="toggleStartMenu(event)">PRTS OS</button>
+    <div class="search-box">
+      🔍 <input type="text" id="searchInput" placeholder="Поиск файлов..." oninput="filterDesktop()">
+    </div>
+  </div>
+
+  <audio id="sound-main" src="[Arknights OST] Main Theme BGM (1Hour Loop).mp3" loop preload="auto"></audio>
+
+  <script>
+    const mainBgm = document.getElementById('sound-main');
+
+    // Функция гарантированного включения звука по первому клику
+    function initAudio() {
+      if (mainBgm && mainBgm.paused) {
+        mainBgm.volume = 0.4;
+        mainBgm.play().catch(() => {});
+      }
+      document.removeEventListener('click', initAudio);
+    }
+
+    document.addEventListener('click', initAudio);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const fadeInOverlay = document.getElementById('fade-in-overlay');
+      setTimeout(() => {
+        fadeInOverlay.style.opacity = "0";
+      }, 100);
+
+      initAudio();
+    });
+
+    // Открытие/закрытие Меню Пуск
+    function toggleStartMenu(event) {
+      if (event) event.stopPropagation();
+      const menu = document.getElementById('start-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Закрывать меню пуск при клике мимо него
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('start-menu');
+      if (!menu.classList.contains('hidden') && !e.target.closest('#start-menu') && !e.target.closest('.start-btn')) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function openWindow(id) {
+      const win = document.getElementById(id);
+      win.classList.remove('hidden');
+      document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
+      win.style.zIndex = 200;
+    }
+
+    function closeWindow(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function filterDesktop() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('.icon').forEach(icon => {
+        const name = icon.getAttribute('data-name');
+        icon.style.display = name.includes(query) ? 'flex' : 'none';
+      });
+    }
+
+    function dragWindow(e, windowId) {
+      const win = document.getElementById(windowId);
+      document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
+      win.style.zIndex = 200;
+
+      let shiftX = e.clientX - win.getBoundingClientRect().left;
+      let shiftY = e.clientY - win.getBoundingClientRect().top;
+
+      function moveAt(pageX, pageY) {
+        win.style.left = pageX - shiftX + 'px';
+        win.style.top = pageY - shiftY + 'px';
+      }
+
+      function onMouseMove(event) {
+        moveAt(event.pageX, event.pageY);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+
+      document.onmouseup = function() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.onmouseup = null;
+      };
+    }
+  </script>
+</body>
+</html>

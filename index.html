@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRTS // System Login & Desktop</title>
   <style>
     * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
@@ -42,15 +43,11 @@
       position: relative;
     }
 
-    /* Переключатель языков на логин-экране */
     .lang-selector-login {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      display: flex;
-      gap: 8px;
-      font-size: 0.75rem;
-      font-family: monospace;
+      top: 10px; right: 15px;
+      display: flex; gap: 8px;
+      font-size: 0.75rem; font-family: monospace;
     }
 
     .lang-btn {
@@ -115,7 +112,7 @@
       50% { opacity: 1; }
     }
 
-    /* --- ВИДЕО ZAСТАВКА --- */
+    /* --- ВИДЕО-ЗАСТАВКА --- */
     #video-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -128,8 +125,7 @@
     }
 
     #intro-video {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: cover;
     }
 
@@ -166,12 +162,9 @@
 
     .icon {
       width: 90px; height: 90px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: 6px; cursor: pointer;
       border: 1px solid transparent;
       transition: all 0.2s;
     }
@@ -185,44 +178,32 @@
 
     .icon-img { font-size: 2.5rem; margin-bottom: 4px; }
     .icon-title {
-      font-size: 0.8rem;
-      color: #e0f7fc;
+      font-size: 0.8rem; color: #e0f7fc;
       text-shadow: 0 1px 4px #000, 0 0 2px #000;
       text-align: center;
     }
 
     /* ТАСКБАР */
     #taskbar {
-      height: 45px;
-      width: 100vw;
+      height: 45px; width: 100vw;
       background: rgba(10, 22, 35, 0.8);
       backdrop-filter: blur(12px);
       border-top: 1px solid rgba(0, 240, 255, 0.4);
-      position: fixed;
-      bottom: 0;
-      display: flex;
-      align-items: center;
+      position: fixed; bottom: 0;
+      display: flex; align-items: center;
       justify-content: space-between;
-      padding: 0 15px;
-      z-index: 2000;
+      padding: 0 15px; z-index: 2000;
       box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.7);
     }
 
-    .taskbar-left {
-      display: flex;
-      align-items: center;
-    }
+    .taskbar-left { display: flex; align-items: center; }
 
     .start-btn {
       background: linear-gradient(135deg, #005580, #00f0ff);
-      border: 1px solid #00f0ff;
-      color: #fff;
-      padding: 6px 18px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
-      cursor: pointer;
-      margin-right: 15px;
+      border: 1px solid #00f0ff; color: #fff;
+      padding: 6px 18px; border-radius: 4px;
+      font-weight: bold; font-family: 'Courier New', monospace;
+      cursor: pointer; margin-right: 15px;
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
       transition: all 0.2s ease;
     }
@@ -235,52 +216,37 @@
     .search-box {
       background: rgba(0, 0, 0, 0.6);
       border: 1px solid rgba(0, 240, 255, 0.4);
-      border-radius: 4px;
-      padding: 4px 10px;
+      border-radius: 4px; padding: 4px 10px;
     }
 
     .search-box input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #00f0ff;
-      font-size: 0.85rem;
-      width: 180px;
+      background: transparent; border: none; outline: none;
+      color: #00f0ff; font-size: 0.85rem; width: 180px;
     }
 
     .taskbar-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: monospace;
-      font-size: 0.85rem;
+      display: flex; align-items: center; gap: 12px;
+      font-family: monospace; font-size: 0.85rem;
     }
 
     /* МЕНЮ ПУСК */
     #start-menu {
-      position: fixed;
-      bottom: 50px; left: 15px;
+      position: fixed; bottom: 50px; left: 15px;
       width: 280px;
       background: rgba(8, 16, 26, 0.95);
       border: 1px solid rgba(0, 240, 255, 0.5);
       border-radius: 8px;
       box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
       backdrop-filter: blur(10px);
-      padding: 15px;
-      z-index: 2100;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      padding: 15px; z-index: 2100;
+      display: flex; flex-direction: column; gap: 10px;
     }
 
     .menu-item {
-      padding: 10px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      color: #00f0ff;
+      padding: 10px; border: 1px solid transparent;
+      border-radius: 4px; color: #00f0ff;
       font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      cursor: pointer;
+      font-size: 0.9rem; cursor: pointer;
       transition: all 0.2s;
     }
 
@@ -292,51 +258,149 @@
     /* ОКНА */
     .window {
       position: absolute;
-      width: 520px; height: 350px;
-      background: rgba(10, 20, 30, 0.92);
+      width: 540px; height: 380px;
+      background: rgba(10, 20, 30, 0.94);
       border: 1px solid rgba(0, 240, 255, 0.5);
       border-radius: 8px 8px 0 0;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(0, 240, 255, 0.2);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 1050;
+      display: flex; flex-direction: column;
+      overflow: hidden; z-index: 1050;
+    }
+
+    #operators-win {
+      width: 680px;
+      height: 440px;
     }
 
     .window-header {
       background: linear-gradient(90deg, rgba(0, 40, 60, 0.95), rgba(0, 80, 120, 0.95));
       padding: 8px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: move;
-      border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: move; border-bottom: 1px solid rgba(0, 240, 255, 0.3);
     }
 
     .window-title { font-size: 0.9rem; color: #00f0ff; font-weight: bold; }
     .close-btn {
-      background: #ff4d4d;
-      border: none;
-      color: #fff;
-      width: 22px; height: 22px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-weight: bold;
+      background: #ff4d4d; border: none; color: #fff;
+      width: 22px; height: 22px; border-radius: 3px;
+      cursor: pointer; font-weight: bold;
     }
 
     .window-body {
-      padding: 15px;
-      flex-grow: 1;
-      overflow-y: auto;
-      color: #d8ecf8;
-      font-size: 0.95rem;
+      padding: 15px; flex-grow: 1;
+      overflow-y: auto; color: #d8ecf8;
+      font-size: 0.95rem; position: relative;
+    }
+
+    /* ИНТЕРАКТИВНАЯ КАРТА */
+    .ship-map-container {
+      display: flex;
+      gap: 15px;
+      height: 100%;
+    }
+
+    .map-svg-wrapper {
+      flex: 1;
+      background: rgba(0, 10, 20, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sector-zone {
+      fill: rgba(0, 240, 255, 0.1);
+      stroke: #00f0ff;
+      stroke-width: 1.5;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .sector-zone:hover {
+      fill: rgba(0, 240, 255, 0.4);
+      stroke: #fff;
+      filter: drop-shadow(0 0 8px #00f0ff);
+    }
+
+    .sector-label {
+      fill: #00f0ff;
+      font-family: monospace;
+      font-size: 11px;
+      pointer-events: none;
+    }
+
+    .dossier-panel {
+      width: 220px;
+      background: rgba(5, 15, 25, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+    }
+
+    .dossier-panel.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .dossier-title {
+      color: #00f0ff;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(0,240,255,0.3);
+      padding-bottom: 4px;
+    }
+
+    .dossier-desc {
+      font-size: 0.75rem;
+      color: #a0c0d0;
+      line-height: 1.3;
+    }
+
+    .dossier-staff {
+      font-size: 0.75rem;
+      color: #fff;
     }
 
     .hidden { display: none !important; }
+
+    /* МОБИЛЬНЫЕ СТИЛИ */
+    @media (max-width: 900px) and (orientation: landscape) {
+      #desktop {
+        padding: 10px; gap: 10px;
+        grid-template-columns: repeat(auto-fill, 75px);
+        grid-template-rows: repeat(auto-fill, 75px);
+      }
+      .icon { width: 70px; height: 70px; }
+      .icon-img { font-size: 1.8rem; }
+      .icon-title { font-size: 0.7rem; }
+      .window {
+        width: 90vw !important;
+        height: 80vh !important;
+        left: 5vw !important; top: 5vh !important;
+      }
+      #operators-win {
+        width: 92vw !important;
+        height: 82vh !important;
+        left: 4vw !important; top: 4vh !important;
+      }
+      .ship-map-container { flex-direction: row; gap: 8px; }
+      .dossier-panel { width: 180px; font-size: 0.8rem; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- 1. ЭКРАН ВХОДА -->
   <div id="login-screen">
     <div class="login-box">
       <div class="lang-selector-login">
@@ -352,12 +416,14 @@
     </div>
   </div>
 
+  <!-- 2. ВИДЕО-ЗАСТАВКА -->
   <div id="video-overlay">
     <video id="intro-video" preload="auto" playsinline>
       <source src="Welcome Back, Doctor..mp4" type="video/mp4">
     </video>
   </div>
 
+  <!-- 3. РАБОЧИЙ СТОЛ -->
   <div id="desktop-container">
     <div class="crt-overlay"></div>
 
@@ -376,6 +442,7 @@
       </div>
     </div>
 
+    <!-- МЕНЮ ПУСК -->
     <div id="start-menu" class="hidden">
       <div style="font-weight: bold; border-bottom: 1px solid #00f0ff; padding-bottom: 5px; margin-bottom: 5px; color: #fff;" data-i18n="startTitle">
         PRTS SYSTEM MENU
@@ -388,6 +455,7 @@
       </div>
     </div>
 
+    <!-- ОКНА -->
     <div id="archive-win" class="window hidden" style="top: 80px; left: 150px;">
       <div class="window-header" onmousedown="dragWindow(event, 'archive-win')">
         <span class="window-title" data-i18n="archiveTitle">📂 Архив Родоса</span>
@@ -403,15 +471,40 @@
       </div>
     </div>
 
-    <div id="operators-win" class="window hidden" style="top: 120px; left: 220px;">
+    <div id="operators-win" class="window hidden" style="top: 100px; left: 180px;">
       <div class="window-header" onmousedown="dragWindow(event, 'operators-win')">
-        <span class="window-title" data-i18n="operatorsTitle">👥 Ростер Операторов</span>
+        <span class="window-title" data-i18n="operatorsTitle">👥 Структура RHODES ISLAND</span>
         <button class="close-btn" onclick="closeWindow('operators-win')">×</button>
       </div>
       <div class="window-body">
-        <p><b>Amiya:</b> <span data-i18n="opAmiya">Лидер Rhodes Island (Caster)</span></p>
-        <p><b>Kal'tsit:</b> <span data-i18n="opKaltsit">Глава Медицинского Отдела (Medic)</span></p>
-        <p><b>Doctor:</b> <span data-i18n="opDoctor">Главный Стратег</span></p>
+        <div class="ship-map-container">
+          <div class="map-svg-wrapper">
+            <svg width="360" height="320" viewBox="0 0 360 320">
+              <polygon points="40,160 100,50 320,50 350,160 320,270 100,270" fill="none" stroke="rgba(0,240,255,0.2)" stroke-width="1" stroke-dasharray="4"/>
+              
+              <g onmouseenter="showDossier('command')" onmouseleave="hideDossier()">
+                <polygon points="60,160 110,90 170,90 170,230 110,230" class="sector-zone" />
+                <text x="100" y="165" class="sector-label">COMMAND</text>
+              </g>
+
+              <g onmouseenter="showDossier('medical')" onmouseleave="hideDossier()">
+                <rect x="180" y="70" width="120" height="80" rx="4" class="sector-zone" />
+                <text x="210" y="115" class="sector-label">MEDICAL</text>
+              </g>
+
+              <g onmouseenter="showDossier('engineering')" onmouseleave="hideDossier()">
+                <rect x="180" y="170" width="120" height="80" rx="4" class="sector-zone" />
+                <text x="200" y="215" class="sector-label">ENGINEERING</text>
+              </g>
+            </svg>
+          </div>
+
+          <div id="dossier-panel" class="dossier-panel">
+            <div id="dossier-title" class="dossier-title">Сектор</div>
+            <div id="dossier-desc" class="dossier-desc">Наведите на отсек судна для получения данных PRTS.</div>
+            <div id="dossier-staff" class="dossier-staff"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -427,6 +520,7 @@
       </div>
     </div>
 
+    <!-- ТАСКБАР -->
     <div id="taskbar">
       <div class="taskbar-left">
         <button class="start-btn" onclick="toggleStartMenu(event)">PRTS OS</button>
@@ -447,6 +541,39 @@
   <audio id="bgm-desktop" src="[Arknights OST] Main Theme BGM (1Hour Loop).mp3" loop preload="auto"></audio>
 
   <script>
+    const sectorData = {
+      command: {
+        title: "[ СЕКТОР: УПРАВЛЕНИЕ ]",
+        desc: "Главный командный мостик судна. Координация операций и принятие стратегических решений.",
+        staff: "<b>Состав:</b><br>• Doctor (Стратег)<br>• Amiya (Лидер)<br>• PRTS (ИИ)"
+      },
+      medical: {
+        title: "[ СЕКТОР: МЕДИЦИНА ]",
+        desc: "Диагностика и лечение Орипатии. Исследовательский центр кристаллов Ориджиниуму.",
+        staff: "<b>Состав:</b><br>• Kal'tsit (Глава)<br>• Ansel (Медик)<br>• Hibiscus (Медик)"
+      },
+      engineering: {
+        title: "[ СЕКТОР: ИНЖЕНЕРИЯ ]",
+        desc: "Обслуживание двигательной системы наземного судна и разработка экипировки.",
+        staff: "<b>Состав:</b><br>• Closure (Гл. Инженер)<br>• Vulcan (Кузнец)"
+      }
+    };
+
+    function showDossier(sectorKey) {
+      const panel = document.getElementById('dossier-panel');
+      const data = sectorData[sectorKey];
+      if (data) {
+        document.getElementById('dossier-title').innerText = data.title;
+        document.getElementById('dossier-desc').innerText = data.desc;
+        document.getElementById('dossier-staff').innerHTML = data.staff;
+        panel.classList.add('active');
+      }
+    }
+
+    function hideDossier() {
+      document.getElementById('dossier-panel').classList.remove('active');
+    }
+
     const loginScreen = document.getElementById('login-screen');
     const videoOverlay = document.getElementById('video-overlay');
     const introVideo = document.getElementById('intro-video');
@@ -462,7 +589,6 @@
     let passwordProgress = 0;
     let isTransitioning = false;
 
-    // Ввод исключительно клавишами
     document.addEventListener('keydown', (e) => {
       if (isTransitioning) return;
 
@@ -480,7 +606,6 @@
       }
     });
 
-    // Вход выполняется СТРОГО при клике на кнопку мышкой
     function startLoginSequence() {
       if (isTransitioning) return;
       isTransitioning = true;
@@ -518,7 +643,6 @@
       videoOverlay.style.display = 'none';
     });
 
-    // Рабочий стол
     function toggleStartMenu(event) {
       if (event) event.stopPropagation();
       const menu = document.getElementById('start-menu');
@@ -577,5 +701,6 @@
     }
   </script>
   <script src="translations.js"></script>
+  <script src="mobile-adapter.js"></script>
 </body>
 </html>

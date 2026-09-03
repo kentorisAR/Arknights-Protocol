@@ -2,19 +2,19 @@
    PRTS NETWORK & ARCHIVE SYSTEM (prts-console.js)
    ========================================================= */
 
-// Получение текста с учетом текущего глобального языка
+// Вспомогательная функция получения перевода
 function getPRTSText(key) {
   const lang = window.currentLang || 'ru';
-  if (typeof consoleTranslations !== 'undefined' && consoleTranslations[lang] && consoleTranslations[lang][key]) {
-    return consoleTranslations[lang][key];
+  if (translations && translations[lang] && translations[lang][key]) {
+    return translations[lang][key];
   }
-  if (typeof consoleTranslations !== 'undefined' && consoleTranslations['ru'] && consoleTranslations['ru'][key]) {
-    return consoleTranslations['ru'][key];
+  if (translations && translations['ru'] && translations['ru'][key]) {
+    return translations['ru'][key];
   }
   return key;
 }
 
-// Динамическое получение базы данных регионов
+// Динамическая база данных
 function getTerraData() {
   return {
     ursus: {
@@ -73,23 +73,18 @@ function initPRTSConsole() {
   const terminalWin = document.querySelector('#terminal-win .window-body');
   if (!terminalWin) return;
 
-  // Сохраняем состояние видимости вьюшек при перерисовке
-  const regViewHidden = document.getElementById('prts-view-regions') ? document.getElementById('prts-view-regions').classList.contains('hidden') : false;
-  const detViewHidden = document.getElementById('prts-view-detail') ? document.getElementById('prts-view-detail').classList.contains('hidden') : true;
-  const treeViewHidden = document.getElementById('prts-view-tree') ? document.getElementById('prts-view-tree').classList.contains('hidden') : true;
-
   terminalWin.innerHTML = `
     <div id="prts-console-wrapper" style="height: 100%; display: flex; flex-direction: column; font-family: monospace;">
       
       <!-- 1. СЕТКА РЕГИОНОВ -->
-      <div id="prts-view-regions" class="${regViewHidden ? 'hidden' : ''}">
+      <div id="prts-view-regions">
         <div id="prts-title-select" style="color: #00f0ff; margin-bottom: 15px; font-weight: bold;">${getPRTSText('select_region')}</div>
         <div id="prts-regions-grid" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
       </div>
 
       <!-- 2. МЕНЮ РЕГИОНА -->
-      <div id="prts-view-detail" class="${detViewHidden ? 'hidden' : ''}">
-        <button class="prts-btn-back" id="btn-back-reg" onclick="prtsShowView('prts-view-regions')">${getPRTSText('btn_back_regions')}</button>
+      <div id="prts-view-detail" class="hidden">
+        <button class="prts-btn-back" id="prts-btn-back-reg" onclick="prtsShowView('prts-view-regions')">${getPRTSText('btn_back_regions')}</button>
         
         <div style="display: flex; align-items: center; gap: 12px; margin: 10px 0;">
           <img id="prts-region-logo" src="" style="width: 35px; height: 35px; object-fit: contain;">
@@ -97,10 +92,10 @@ function initPRTSConsole() {
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-          <button class="prts-nav-btn" onclick="prtsShowSection('politics_internal')">${getPRTSText('btn_internal_pol')}</button>
-          <button class="prts-nav-btn" onclick="prtsShowSection('politics_external')">${getPRTSText('btn_external_pol')}</button>
-          <button class="prts-nav-btn" onclick="prtsShowSection('government')">${getPRTSText('btn_gov')}</button>
-          <button class="prts-nav-btn" onclick="prtsShowTree()">${getPRTSText('btn_ops')}</button>
+          <button class="prts-nav-btn" id="prts-btn-pol-int" onclick="prtsShowSection('politics_internal')">${getPRTSText('btn_internal_pol')}</button>
+          <button class="prts-nav-btn" id="prts-btn-pol-ext" onclick="prtsShowSection('politics_external')">${getPRTSText('btn_external_pol')}</button>
+          <button class="prts-nav-btn" id="prts-btn-gov" onclick="prtsShowSection('government')">${getPRTSText('btn_gov')}</button>
+          <button class="prts-nav-btn" id="prts-btn-ops" onclick="prtsShowTree()">${getPRTSText('btn_ops')}</button>
         </div>
 
         <div id="prts-info-box" style="background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0,240,255,0.3); padding: 10px; font-size: 0.8rem; color: #d8ecf8; min-height: 80px; border-radius: 4px;">
@@ -109,8 +104,8 @@ function initPRTSConsole() {
       </div>
 
       <!-- 3. ДРЕВО ОПЕРАТИВНИКОВ -->
-      <div id="prts-view-tree" class="${treeViewHidden ? 'hidden' : ''}" style="position: relative; flex-grow: 1;">
-        <button class="prts-btn-back" onclick="prtsShowView('prts-view-detail')">${getPRTSText('btn_back_detail')}</button>
+      <div id="prts-view-tree" class="hidden" style="position: relative; flex-grow: 1;">
+        <button class="prts-btn-back" id="prts-btn-back-det" onclick="prtsShowView('prts-view-detail')">${getPRTSText('btn_back_detail')}</button>
         <div id="prts-tree-container" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;"></div>
 
         <!-- ДОСЬЕ -->
@@ -124,7 +119,7 @@ function initPRTSConsole() {
           </div>
           <div id="prts-d-status" style="font-size: 0.65rem; color: #00f0ff;"></div>
           <div id="prts-d-text" style="font-size: 0.7rem; color: #d8ecf8; line-height: 1.3;"></div>
-          <button class="prts-btn-back" style="margin-top: auto; width: 100%; text-align: center;" onclick="prtsCloseDossier()">${getPRTSText('close_dossier')}</button>
+          <button class="prts-btn-back" id="prts-btn-close-dos" style="margin-top: auto; width: 100%; text-align: center;" onclick="prtsCloseDossier()">${getPRTSText('close_dossier')}</button>
         </div>
       </div>
 
@@ -133,10 +128,6 @@ function initPRTSConsole() {
 
   injectPRTSStyles();
   renderRegionsGrid();
-
-  if (currentRegionId) {
-    updateRegionViewData();
-  }
 }
 
 function injectPRTSStyles() {
@@ -272,10 +263,37 @@ function prtsCloseDossier() {
   document.getElementById('prts-dossier').classList.add('hidden');
 }
 
-// 4. Принудительное обновление при смене языка
-function prtsOnLanguageChange() {
-  initPRTSConsole();
+// 🌐 Функция мгновенного обновления текстовых элементов при переключении языков
+function updatePRTSLanguage() {
+  const selectTitle = document.getElementById('prts-title-select');
+  if (selectTitle) selectTitle.innerText = getPRTSText('select_region');
+
+  const btnBackReg = document.getElementById('prts-btn-back-reg');
+  if (btnBackReg) btnBackReg.innerText = getPRTSText('btn_back_regions');
+
+  const btnBackDet = document.getElementById('prts-btn-back-det');
+  if (btnBackDet) btnBackDet.innerText = getPRTSText('btn_back_detail');
+
+  const btnPolInt = document.getElementById('prts-btn-pol-int');
+  if (btnPolInt) btnPolInt.innerText = getPRTSText('btn_internal_pol');
+
+  const btnPolExt = document.getElementById('prts-btn-pol-ext');
+  if (btnPolExt) btnPolExt.innerText = getPRTSText('btn_external_pol');
+
+  const btnGov = document.getElementById('prts-btn-gov');
+  if (btnGov) btnGov.innerText = getPRTSText('btn_gov');
+
+  const btnOps = document.getElementById('prts-btn-ops');
+  if (btnOps) btnOps.innerText = getPRTSText('btn_ops');
+
+  const btnCloseDos = document.getElementById('prts-btn-close-dos');
+  if (btnCloseDos) btnCloseDos.innerText = getPRTSText('close_dossier');
+
+  // Перерисовываем соты и активную карточку региона
+  renderRegionsGrid();
+  if (currentRegionId) {
+    updateRegionViewData();
+  }
 }
 
-document.addEventListener('languageChanged', prtsOnLanguageChange);
 document.addEventListener('DOMContentLoaded', initPRTSConsole);

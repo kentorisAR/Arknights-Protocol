@@ -2,19 +2,22 @@
    PRTS NETWORK & ARCHIVE SYSTEM (prts-console.js)
    ========================================================= */
 
-// Вспомогательная функция получения перевода
+let currentRegionId = null;
+let currentActiveSection = null;
+
+// Получение перевода из глобального i18n
 function getPRTSText(key) {
-  const lang = window.currentLang || 'ru';
-  if (translations && translations[lang] && translations[lang][key]) {
-    return translations[lang][key];
+  const lang = window.currentLang || localStorage.getItem('prts_lang') || 'ru';
+  if (typeof i18n !== 'undefined' && i18n[lang] && i18n[lang][key]) {
+    return i18n[lang][key];
   }
-  if (translations && translations['ru'] && translations['ru'][key]) {
-    return translations['ru'][key];
+  if (typeof i18n !== 'undefined' && i18n['ru'] && i18n['ru'][key]) {
+    return i18n['ru'][key];
   }
   return key;
 }
 
-// Динамическая база данных
+// Данные регионов и оперативников
 function getTerraData() {
   return {
     ursus: {
@@ -66,15 +69,24 @@ function getTerraData() {
   };
 }
 
-let currentRegionId = null;
-let currentActiveSection = null;
+// Поиск контейнера терминала в HTML
+function getTerminalContainer() {
+  return document.querySelector('#terminal-win .window-body') || 
+         document.querySelector('#terminalWindow .window-body') ||
+         document.querySelector('#prts-window .window-body') ||
+         document.querySelector('[data-window="terminal"] .window-body') ||
+         document.querySelector('#terminal-win') ||
+         document.querySelector('#terminalWindow');
+}
 
+// Инициализация графического интерфейса
 function initPRTSConsole() {
-  const terminalWin = document.querySelector('#terminal-win .window-body');
+  const terminalWin = getTerminalContainer();
   if (!terminalWin) return;
 
+  // Вставляем макет консоли
   terminalWin.innerHTML = `
-    <div id="prts-console-wrapper" style="height: 100%; display: flex; flex-direction: column; font-family: monospace;">
+    <div id="prts-console-wrapper" style="height: 100%; display: flex; flex-direction: column; font-family: monospace; padding: 10px; box-sizing: border-box; overflow-y: auto;">
       
       <!-- 1. СЕТКА РЕГИОНОВ -->
       <div id="prts-view-regions">
@@ -87,7 +99,7 @@ function initPRTSConsole() {
         <button class="prts-btn-back" id="prts-btn-back-reg" onclick="prtsShowView('prts-view-regions')">${getPRTSText('btn_back_regions')}</button>
         
         <div style="display: flex; align-items: center; gap: 12px; margin: 10px 0;">
-          <img id="prts-region-logo" src="" style="width: 35px; height: 35px; object-fit: contain;">
+          <img id="prts-region-logo" src="" style="width: 35px; height: 35px; object-fit: contain;" onerror="this.style.display='none'">
           <h3 id="prts-region-title" style="color: #00f0ff; margin: 0;"></h3>
         </div>
         
@@ -111,7 +123,7 @@ function initPRTSConsole() {
         <!-- ДОСЬЕ -->
         <div id="prts-dossier" class="hidden" style="position: absolute; right: 0; top: 0; bottom: 0; width: 240px; background: rgba(5,15,25,0.98); border: 1px solid #00f0ff; padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; box-shadow: -5px 0 15px rgba(0,0,0,0.8); z-index: 10;">
           <div style="display: flex; gap: 10px; align-items: center;">
-            <img id="prts-d-img" src="" style="width: 50px; height: 50px; border: 1px solid #00f0ff; border-radius: 4px; object-fit: cover;">
+            <img id="prts-d-img" src="" style="width: 50px; height: 50px; border: 1px solid #00f0ff; border-radius: 4px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50?text=OP'">
             <div>
               <div id="prts-d-name" style="color: #00f0ff; font-weight: bold; font-size: 0.85rem;"></div>
               <div id="prts-d-role" style="color: #a0c0d0; font-size: 0.7rem;"></div>
@@ -135,6 +147,7 @@ function injectPRTSStyles() {
   const style = document.createElement('style');
   style.id = 'prts-console-styles';
   style.innerHTML = `
+    .hidden { display: none !important; }
     .prts-hex-card {
       width: 110px; height: 100px;
       background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.4);
@@ -177,7 +190,7 @@ function renderRegionsGrid() {
     card.className = 'prts-hex-card';
     card.onclick = () => prtsOpenRegion(reg.id);
     card.innerHTML = `
-      <img src="${reg.logo}" alt="${reg.name}" style="width: 40px; height: 40px; object-fit: contain;">
+      <img src="${reg.logo}" alt="${reg.name}" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none'">
       <div style="color: #00f0ff; font-weight: bold; margin-top: 4px; font-size: 0.75rem;">${reg.cardName}</div>
     `;
     grid.appendChild(card);
@@ -185,10 +198,16 @@ function renderRegionsGrid() {
 }
 
 function prtsShowView(viewId) {
-  document.getElementById('prts-view-regions').classList.add('hidden');
-  document.getElementById('prts-view-detail').classList.add('hidden');
-  document.getElementById('prts-view-tree').classList.add('hidden');
-  document.getElementById(viewId).classList.remove('hidden');
+  const regView = document.getElementById('prts-view-regions');
+  const detView = document.getElementById('prts-view-detail');
+  const treeView = document.getElementById('prts-view-tree');
+  
+  if (regView) regView.classList.add('hidden');
+  if (detView) detView.classList.add('hidden');
+  if (treeView) treeView.classList.add('hidden');
+  
+  const target = document.getElementById(viewId);
+  if (target) target.classList.remove('hidden');
 }
 
 function prtsOpenRegion(regionId) {
@@ -207,7 +226,10 @@ function updateRegionViewData() {
   const titleEl = document.getElementById('prts-region-title');
   const infoEl = document.getElementById('prts-info-box');
 
-  if (logoEl) logoEl.src = reg.logo;
+  if (logoEl) {
+    logoEl.src = reg.logo;
+    logoEl.style.display = 'inline-block';
+  }
   if (titleEl) titleEl.innerText = reg.name + " [" + reg.code + "]";
   
   if (infoEl) {
@@ -251,20 +273,28 @@ function prtsShowTree() {
 }
 
 function prtsOpenDossier(op) {
-  document.getElementById('prts-d-img').src = op.avatar;
-  document.getElementById('prts-d-name').innerText = op.name;
-  document.getElementById('prts-d-role').innerText = op.role;
-  document.getElementById('prts-d-status').innerText = getPRTSText('status') + op.status;
-  document.getElementById('prts-d-text').innerText = op.dossier;
-  document.getElementById('prts-dossier').classList.remove('hidden');
+  const dImg = document.getElementById('prts-d-img');
+  const dName = document.getElementById('prts-d-name');
+  const dRole = document.getElementById('prts-d-role');
+  const dStatus = document.getElementById('prts-d-status');
+  const dText = document.getElementById('prts-d-text');
+  const dossier = document.getElementById('prts-dossier');
+
+  if (dImg) dImg.src = op.avatar;
+  if (dName) dName.innerText = op.name;
+  if (dRole) dRole.innerText = op.role;
+  if (dStatus) dStatus.innerText = getPRTSText('status') + op.status;
+  if (dText) dText.innerText = op.dossier;
+  if (dossier) dossier.classList.remove('hidden');
 }
 
 function prtsCloseDossier() {
-  document.getElementById('prts-dossier').classList.add('hidden');
+  const dossier = document.getElementById('prts-dossier');
+  if (dossier) dossier.classList.add('hidden');
 }
 
-// 🌐 Функция мгновенного обновления текстовых элементов при переключении языков
-function updatePRTSLanguage() {
+// Перевод элементов на лету при смена языка
+window.addEventListener('languageChanged', () => {
   const selectTitle = document.getElementById('prts-title-select');
   if (selectTitle) selectTitle.innerText = getPRTSText('select_region');
 
@@ -289,11 +319,21 @@ function updatePRTSLanguage() {
   const btnCloseDos = document.getElementById('prts-btn-close-dos');
   if (btnCloseDos) btnCloseDos.innerText = getPRTSText('close_dossier');
 
-  // Перерисовываем соты и активную карточку региона
   renderRegionsGrid();
   if (currentRegionId) {
     updateRegionViewData();
   }
-}
+});
 
-document.addEventListener('DOMContentLoaded', initPRTSConsole);
+// Автозапуск при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+  initPRTSConsole();
+  
+  // Дополнительно: если иконка Терминала открывает окно, переинициализируем интерфейс
+  const terminalIcon = document.querySelector('[data-window="terminal"]') || document.getElementById('icon-terminal');
+  if (terminalIcon) {
+    terminalIcon.addEventListener('click', () => {
+      setTimeout(initPRTSConsole, 50);
+    });
+  }
+});

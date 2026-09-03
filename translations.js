@@ -39,6 +39,59 @@ const i18n = {
 
     terminalTitle: "💻 PRTS Console",
 
+     // Добавьте эти ключи внутрь объекта i18n в translations.js:
+
+   /* RU */
+   sector_label: "СЕКТОР: ",
+   sector_composition: "Состав:",
+
+   command_title: "УПРАВЛЕНИЕ",
+   command_desc: "Главный командный мостик судна. Координация операций и принятие стратегических решений.",
+   command_members: "• Doctor (Стратег)\n• Amiya (Лидер)\n• PRTS (ИИ)",
+
+   medical_title: "МЕДИЦИНА",
+   medical_desc: "Медицинский отдел и исследовательская лаборатория. Лечение Орипатии и разработка препаратов.",
+   medical_members: "• Kal'tsit (Глава отделения)\n• Gavial (Врач)\n• Shining (Врач)",
+
+   engineering_title: "ИНЖЕНЕРИЯ",
+   engineering_desc: "Обслуживание двигательной системы наземного судна и разработка экипировки.",
+   engineering_members: "• Closure (Гл. Инженер)\n• Vulcan (Кузнец)",
+
+
+   /* EN */
+   sector_label: "SECTOR: ",
+   sector_composition: "Personnel:",
+
+   command_title: "COMMAND",
+   command_desc: "Main command bridge. Operation coordination and strategic decision-making.",
+   command_members: "• Doctor (Strategist)\n• Amiya (Leader)\n• PRTS (AI)",
+
+   medical_title: "MEDICAL",
+   medical_desc: "Medical department and research lab. Oripathy treatment and drug development.",
+   medical_members: "• Kal'tsit (Head of Dept.)\n• Gavial (Medic)\n• Shining (Medic)",
+
+   engineering_title: "ENGINEERING",
+   engineering_desc: "Landship propulsion system maintenance and equipment engineering.",
+   engineering_members: "• Closure (Chief Engineer)\n• Vulcan (Blacksmith)",
+
+
+   /* JP */
+   sector_label: "セクター: ",
+   sector_composition: "構成員:",
+
+   command_title: "指揮部",
+   command_desc: "艦艇のメインブリッジ。作戦の統 me и 戦略的意思決定を行う。",
+   command_members: "• Doctor (戦略官)\n• Amiya (リーダー)\n• PRTS (AI)",
+
+   medical_title: "医療部",
+   medical_desc: "医療部門および研究ラボ。鉱石病（オリパシー）の治療と薬剤開発。",
+   medical_members: "• Kal'tsit (医療部門統括)\n• Gavial (医師)\n• Shining (医師)",
+
+   engineering_title: "エンジニア部",
+   engineering_desc: "移動都市の動力システム保守および dynamic 装備の開発。",
+   engineering_members: "• Closure (チーフエンジニア)\n• Vulcan (鍛冶屋)"
+   
+
     // Консоль PRTS (Терминал)
     select_region: "[ ВЫБЕРИТЕ РЕГИОН / ГОСУДАРСТВО ]",
     btn_back_regions: "← НАЗАД К РЕГИОНАМ",

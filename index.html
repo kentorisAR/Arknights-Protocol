@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRTS // System Login & Desktop</title>
+  
+  <!-- Подключаем скрипты перевода и данных секторов заранее -->
+  <script src="translations.js"></script>
+  <script src="sectors-data.js"></script>
+
   <style>
     * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
 
@@ -292,11 +297,12 @@
       font-size: 0.95rem; position: relative;
     }
 
-    /* ИНТЕРАКТИВНАЯ КАРТА */
+    /* ИНТЕРАКТИВНАЯ КАРТА (ИСПРАВЛЕНО) */
     .ship-map-container {
       display: flex;
       gap: 15px;
       height: 100%;
+      align-items: stretch;
     }
 
     .map-svg-wrapper {
@@ -308,6 +314,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      min-width: 0;
+    }
+
+    .map-svg-wrapper svg {
+      width: 100%;
+      height: 100%;
+      max-height: 320px;
     }
 
     .sector-zone {
@@ -333,6 +346,7 @@
 
     .dossier-panel {
       width: 220px;
+      flex-shrink: 0;
       background: rgba(5, 15, 25, 0.9);
       border: 1px solid rgba(0, 240, 255, 0.4);
       border-radius: 6px;
@@ -479,7 +493,7 @@
       <div class="window-body">
         <div class="ship-map-container">
           <div class="map-svg-wrapper">
-            <svg width="360" height="320" viewBox="0 0 360 320">
+            <svg viewBox="0 0 360 320" preserveAspectRatio="xMidYMid meet">
               <polygon points="40,160 100,50 320,50 350,160 320,270 100,270" fill="none" stroke="rgba(0,240,255,0.2)" stroke-width="1" stroke-dasharray="4"/>
               
               <g onmouseenter="showDossier('command')" onmouseleave="hideDossier()">
@@ -541,37 +555,39 @@
   <audio id="bgm-desktop" src="[Arknights OST] Main Theme BGM (1Hour Loop).mp3" loop preload="auto"></audio>
 
   <script>
-    const sectorData = {
-      command: {
-        title: "[ СЕКТОР: УПРАВЛЕНИЕ ]",
-        desc: "Главный командный мостик судна. Координация операций и принятие стратегических решений.",
-        staff: "<b>Состав:</b><br>• Doctor (Стратег)<br>• Amiya (Лидер)<br>• PRTS (ИИ)"
-      },
-      medical: {
-        title: "[ СЕКТОР: МЕДИЦИНА ]",
-        desc: "Диагностика и лечение Орипатии. Исследовательский центр кристаллов Ориджиниуму.",
-        staff: "<b>Состав:</b><br>• Kal'tsit (Глава)<br>• Ansel (Медик)<br>• Hibiscus (Медик)"
-      },
-      engineering: {
-        title: "[ СЕКТОР: ИНЖЕНЕРИЯ ]",
-        desc: "Обслуживание двигательной системы наземного судна и разработка экипировки.",
-        staff: "<b>Состав:</b><br>• Closure (Гл. Инженер)<br>• Vulcan (Кузнец)"
-      }
-    };
+    let currentLang = localStorage.getItem('prts_lang') || 'ru';
 
-    function showDossier(sectorKey) {
-      const panel = document.getElementById('dossier-panel');
-      const data = sectorData[sectorKey];
-      if (data) {
-        document.getElementById('dossier-title').innerText = data.title;
-        document.getElementById('dossier-desc').innerText = data.desc;
-        document.getElementById('dossier-staff').innerHTML = data.staff;
-        panel.classList.add('active');
-      }
-    }
+    // Функция переключения языков
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('prts_lang', lang);
 
-    function hideDossier() {
-      document.getElementById('dossier-panel').classList.remove('active');
+      // Обновление подсвеченных кнопок языков
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        if (btn.getAttribute('data-lang') === lang) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Перевод обычного текста
+      if (typeof i18n !== 'undefined' && i18n[lang]) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (i18n[lang][key]) {
+            el.innerText = i18n[lang][key];
+          }
+        });
+
+        // Перевод плейсхолдеров в инпутах
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          if (i18n[lang][key]) {
+            el.placeholder = i18n[lang][key];
+          }
+        });
+      }
     }
 
     const loginScreen = document.getElementById('login-screen');
@@ -601,7 +617,7 @@
         if (passwordProgress === targetPassword.length) {
           loginBtn.classList.add('active');
           hintText.setAttribute('data-i18n', 'hintClick');
-          if (typeof setLanguage === 'function') setLanguage(currentLang);
+          setLanguage(currentLang);
         }
       }
     });
@@ -699,8 +715,12 @@
         document.onmouseup = null;
       };
     }
+
+    // Инициализация языка при старте
+    document.addEventListener('DOMContentLoaded', () => {
+      setLanguage(currentLang);
+    });
   </script>
-  <script src="translations.js"></script>
   <script src="mobile-adapter.js"></script>
   <script src="prts-console.js"></script>
 </body>

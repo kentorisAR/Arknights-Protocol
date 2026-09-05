@@ -189,6 +189,51 @@
       color: #d8ecf8; font-size: 0.95rem; position: relative;
     }
 
+    /* Стили для карточек в терминале */
+    .region-title {
+      font-size: 1.1rem;
+      color: #00f0ff;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card {
+      width: 140px;
+      height: 140px;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      fill: #00f0ff;
+    }
+
+    .card-text {
+      font-size: 0.85rem;
+      color: #00f0ff;
+      text-align: center;
+      font-weight: bold;
+    }
+
     .ship-map-container { display: flex; gap: 15px; height: 100%; align-items: stretch; }
     .map-svg-wrapper {
       flex: 1; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 240, 255, 0.3);
@@ -342,15 +387,21 @@
       </div>
     </div>
 
+    <!-- ТЕРМИНАЛ -->
     <div id="terminal-win" class="window hidden" style="top: 160px; left: 290px;">
       <div class="window-header" onmousedown="dragWindow(event, 'terminal-win')">
         <span class="window-title" data-i18n="terminalTitle">💻 PRTS Console</span>
         <button class="close-btn" onclick="closeWindow('terminal-win')">×</button>
       </div>
-      <div class="window-body" style="font-family: monospace; color: #00f0ff;">
-        > SYSTEM ONLINE<br>
-        > ACCESS LEVEL: MAXIMUM<br>
-        > WAITING FOR COMMANDS...
+      <div class="window-body" style="font-family: monospace;">
+        <div class="region-title" data-i18n="selectRegion">Выберите регион</div>
+        
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <div class="card-text" data-i18n="ursusCard">Империя Урсус</div>
+        </div>
       </div>
     </div>
 

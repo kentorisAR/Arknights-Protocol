@@ -5,199 +5,122 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRTS // System Login & Desktop</title>
   
-  <!-- Подключаем скрипты перевода и данных секторов заранее -->
+  <!-- Подключение всех необходимых внешних скриптов -->
   <script src="translations.js"></script>
   <script src="sectors-data.js"></script>
+  <script src="main.js"></script>
 
   <style>
     * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
 
     body {
-      height: 100vh;
-      overflow: hidden;
+      height: 100vh; overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #000;
-      color: #fff;
+      background: #000; color: #fff;
     }
 
-    /* --- ЭКРАН ЛОГИНА --- */
     #login-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: #080e14 url('wallpaper.jpg') no-repeat center center / cover;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 3000;
     }
 
     .login-box {
-      background: rgba(10, 20, 30, 0.85);
-      border: 1px solid rgba(0, 240, 255, 0.5);
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-      backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      width: 340px;
-      text-align: center;
-      position: relative;
+      background: rgba(10, 20, 30, 0.85); border: 1px solid rgba(0, 240, 255, 0.5);
+      padding: 30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(10px); display: flex; flex-direction: column;
+      gap: 15px; width: 340px; text-align: center; position: relative;
     }
 
     .lang-selector-login {
-      position: absolute;
-      top: 10px; right: 15px;
-      display: flex; gap: 8px;
+      position: absolute; top: 10px; right: 15px; display: flex; gap: 8px;
       font-size: 0.75rem; font-family: monospace;
     }
 
-    .lang-btn {
-      color: rgba(0, 240, 255, 0.5);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
+    .lang-btn { color: rgba(0, 240, 255, 0.5); cursor: pointer; transition: all 0.2s; }
     .lang-btn:hover, .lang-btn.active {
-      color: #00f0ff;
-      text-shadow: 0 0 5px rgba(0, 240, 255, 0.8);
-      font-weight: bold;
+      color: #00f0ff; text-shadow: 0 0 5px rgba(0, 240, 255, 0.8); font-weight: bold;
     }
 
     .login-box h2 {
-      color: #00f0ff;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 2px;
-      font-size: 1.1rem;
-      margin-top: 10px;
+      color: #00f0ff; font-family: 'Courier New', monospace;
+      letter-spacing: 2px; font-size: 1.1rem; margin-top: 10px;
     }
 
     .login-input {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(0, 240, 255, 0.4);
-      padding: 10px;
-      color: #00f0ff;
-      border-radius: 4px;
-      outline: none;
-      font-family: 'Courier New', monospace;
-      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 240, 255, 0.4);
+      padding: 10px; color: #00f0ff; border-radius: 4px; outline: none;
+      font-family: 'Courier New', monospace; font-size: 1rem;
     }
 
     .login-btn {
-      background: linear-gradient(135deg, #005580, #00f0ff);
-      border: none;
-      color: #fff;
-      padding: 10px;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      font-family: 'Courier New', monospace;
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-      transition: all 0.2s;
+      background: linear-gradient(135deg, #005580, #00f0ff); border: none;
+      color: #fff; padding: 10px; border-radius: 4px; font-weight: bold;
+      cursor: pointer; font-family: 'Courier New', monospace;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); transition: all 0.2s;
     }
 
     .login-btn:hover, .login-btn.active {
-      box-shadow: 0 0 20px rgba(0, 240, 255, 1);
-      filter: brightness(1.3);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 1); filter: brightness(1.3);
     }
 
     .hint-text {
-      font-size: 0.75rem;
-      color: #00f0ff;
-      opacity: 0.7;
-      font-family: monospace;
+      font-size: 0.75rem; color: #00f0ff; opacity: 0.7; font-family: monospace;
       animation: blink 1.5s infinite;
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
+    @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-    /* --- ВИДЕО-ЗАСТАВКА --- */
     #video-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: #000;
-      z-index: 2500;
-      display: none;
-      opacity: 1;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000; z-index: 2500; display: none; opacity: 1;
       transition: opacity 1.5s ease-out;
     }
 
-    #intro-video {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
+    #intro-video { width: 100%; height: 100%; object-fit: cover; }
 
-    /* --- РАБОЧИЙ СТОЛ --- */
     #desktop-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: #080e14 url('wallpaper.jpg') no-repeat center center / cover;
       z-index: 1000;
     }
 
     .crt-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
-      background-size: 100% 4px;
-      z-index: 1010;
-      pointer-events: none;
+      background-size: 100% 4px; z-index: 1010; pointer-events: none;
     }
 
     #desktop {
-      width: 100vw;
-      height: calc(100vh - 45px);
-      padding: 25px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, 100px);
-      grid-template-rows: repeat(auto-fill, 100px);
-      grid-auto-flow: column;
-      gap: 15px;
-      position: relative;
-      z-index: 1020;
+      width: 100vw; height: calc(100vh - 45px); padding: 25px;
+      display: grid; grid-template-columns: repeat(auto-fill, 100px);
+      grid-template-rows: repeat(auto-fill, 100px); grid-auto-flow: column;
+      gap: 15px; position: relative; z-index: 1020;
     }
 
     .icon {
-      width: 90px; height: 90px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      border-radius: 6px; cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s;
+      width: 90px; height: 90px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; border-radius: 6px;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.2s;
     }
 
     .icon:hover {
-      background: rgba(0, 240, 255, 0.15);
-      border: 1px solid rgba(0, 240, 255, 0.5);
-      backdrop-filter: blur(5px);
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+      background: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.5);
+      backdrop-filter: blur(5px); box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
     }
 
     .icon-img { font-size: 2.5rem; margin-bottom: 4px; }
     .icon-title {
-      font-size: 0.8rem; color: #e0f7fc;
-      text-shadow: 0 1px 4px #000, 0 0 2px #000;
+      font-size: 0.8rem; color: #e0f7fc; text-shadow: 0 1px 4px #000, 0 0 2px #000;
       text-align: center;
     }
 
-    /* ТАСКБАР */
     #taskbar {
-      height: 45px; width: 100vw;
-      background: rgba(10, 22, 35, 0.8);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0, 240, 255, 0.4);
-      position: fixed; bottom: 0;
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding: 0 15px; z-index: 2000;
+      height: 45px; width: 100vw; background: rgba(10, 22, 35, 0.8);
+      backdrop-filter: blur(12px); border-top: 1px solid rgba(0, 240, 255, 0.4);
+      position: fixed; bottom: 0; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 15px; z-index: 2000;
       box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.7);
     }
 
@@ -205,22 +128,15 @@
 
     .start-btn {
       background: linear-gradient(135deg, #005580, #00f0ff);
-      border: 1px solid #00f0ff; color: #fff;
-      padding: 6px 18px; border-radius: 4px;
-      font-weight: bold; font-family: 'Courier New', monospace;
-      cursor: pointer; margin-right: 15px;
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-      transition: all 0.2s ease;
+      border: 1px solid #00f0ff; color: #fff; padding: 6px 18px; border-radius: 4px;
+      font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer;
+      margin-right: 15px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); transition: all 0.2s ease;
     }
 
-    .start-btn:hover {
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
-      filter: brightness(1.2);
-    }
+    .start-btn:hover { box-shadow: 0 0 15px rgba(0, 240, 255, 0.8); filter: brightness(1.2); }
 
     .search-box {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(0, 240, 255, 0.4);
+      background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 240, 255, 0.4);
       border-radius: 4px; padding: 4px 10px;
     }
 
@@ -229,184 +145,88 @@
       color: #00f0ff; font-size: 0.85rem; width: 180px;
     }
 
-    .taskbar-right {
-      display: flex; align-items: center; gap: 12px;
-      font-family: monospace; font-size: 0.85rem;
-    }
+    .taskbar-right { display: flex; align-items: center; gap: 12px; font-family: monospace; font-size: 0.85rem; }
 
-    /* МЕНЮ ПУСК */
     #start-menu {
-      position: fixed; bottom: 50px; left: 15px;
-      width: 280px;
-      background: rgba(8, 16, 26, 0.95);
-      border: 1px solid rgba(0, 240, 255, 0.5);
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-      backdrop-filter: blur(10px);
-      padding: 15px; z-index: 2100;
+      position: fixed; bottom: 50px; left: 15px; width: 280px;
+      background: rgba(8, 16, 26, 0.95); border: 1px solid rgba(0, 240, 255, 0.5);
+      border-radius: 8px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(10px); padding: 15px; z-index: 2100;
       display: flex; flex-direction: column; gap: 10px;
     }
 
     .menu-item {
-      padding: 10px; border: 1px solid transparent;
-      border-radius: 4px; color: #00f0ff;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem; cursor: pointer;
-      transition: all 0.2s;
+      padding: 10px; border: 1px solid transparent; border-radius: 4px;
+      color: #00f0ff; font-family: 'Courier New', monospace; font-size: 0.9rem;
+      cursor: pointer; transition: all 0.2s;
     }
 
-    .menu-item:hover {
-      background: rgba(0, 240, 255, 0.2);
-      border-color: rgba(0, 240, 255, 0.5);
-    }
+    .menu-item:hover { background: rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
 
-    /* ОКНА */
     .window {
-      position: absolute;
-      width: 540px; height: 380px;
-      background: rgba(10, 20, 30, 0.94);
-      border: 1px solid rgba(0, 240, 255, 0.5);
-      border-radius: 8px 8px 0 0;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(0, 240, 255, 0.2);
-      display: flex; flex-direction: column;
-      overflow: hidden; z-index: 1050;
+      position: absolute; width: 540px; height: 380px;
+      background: rgba(10, 20, 30, 0.94); border: 1px solid rgba(0, 240, 255, 0.5);
+      border-radius: 8px 8px 0 0; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(0, 240, 255, 0.2);
+      display: flex; flex-direction: column; overflow: hidden; z-index: 1050;
     }
 
-    #operators-win {
-      width: 680px;
-      height: 440px;
-    }
+    #operators-win { width: 680px; height: 440px; }
 
     .window-header {
       background: linear-gradient(90deg, rgba(0, 40, 60, 0.95), rgba(0, 80, 120, 0.95));
-      padding: 8px 12px;
-      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
       cursor: move; border-bottom: 1px solid rgba(0, 240, 255, 0.3);
     }
 
     .window-title { font-size: 0.9rem; color: #00f0ff; font-weight: bold; }
     .close-btn {
       background: #ff4d4d; border: none; color: #fff;
-      width: 22px; height: 22px; border-radius: 3px;
-      cursor: pointer; font-weight: bold;
+      width: 22px; height: 22px; border-radius: 3px; cursor: pointer; font-weight: bold;
     }
 
     .window-body {
-      padding: 15px; flex-grow: 1;
-      overflow-y: auto; color: #d8ecf8;
-      font-size: 0.95rem; position: relative;
+      padding: 15px; flex-grow: 1; overflow-y: auto;
+      color: #d8ecf8; font-size: 0.95rem; position: relative;
     }
 
-    /* ИНТЕРАКТИВНАЯ КАРТА (ИСПРАВЛЕНО) */
-    .ship-map-container {
-      display: flex;
-      gap: 15px;
-      height: 100%;
-      align-items: stretch;
-    }
-
+    .ship-map-container { display: flex; gap: 15px; height: 100%; align-items: stretch; }
     .map-svg-wrapper {
-      flex: 1;
-      background: rgba(0, 10, 20, 0.8);
-      border: 1px solid rgba(0, 240, 255, 0.3);
-      border-radius: 6px;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
+      flex: 1; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 6px; padding: 10px; display: flex; align-items: center;
+      justify-content: center; min-width: 0;
     }
 
-    .map-svg-wrapper svg {
-      width: 100%;
-      height: 100%;
-      max-height: 320px;
-    }
-
+    .map-svg-wrapper svg { width: 100%; height: 100%; max-height: 320px; }
     .sector-zone {
-      fill: rgba(0, 240, 255, 0.1);
-      stroke: #00f0ff;
-      stroke-width: 1.5;
-      cursor: pointer;
-      transition: all 0.3s;
+      fill: rgba(0, 240, 255, 0.1); stroke: #00f0ff; stroke-width: 1.5;
+      cursor: pointer; transition: all 0.3s;
     }
 
-    .sector-zone:hover {
-      fill: rgba(0, 240, 255, 0.4);
-      stroke: #fff;
-      filter: drop-shadow(0 0 8px #00f0ff);
-    }
-
-    .sector-label {
-      fill: #00f0ff;
-      font-family: monospace;
-      font-size: 11px;
-      pointer-events: none;
-    }
+    .sector-zone:hover { fill: rgba(0, 240, 255, 0.4); stroke: #fff; filter: drop-shadow(0 0 8px #00f0ff); }
+    .sector-label { fill: #00f0ff; font-family: monospace; font-size: 11px; pointer-events: none; }
 
     .dossier-panel {
-      width: 220px;
-      flex-shrink: 0;
-      background: rgba(5, 15, 25, 0.9);
-      border: 1px solid rgba(0, 240, 255, 0.4);
-      border-radius: 6px;
-      padding: 12px;
-      font-family: monospace;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      opacity: 0;
-      transform: translateX(10px);
-      transition: all 0.3s ease;
+      width: 220px; flex-shrink: 0; background: rgba(5, 15, 25, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 6px; padding: 12px;
+      font-family: monospace; display: flex; flex-direction: column; gap: 8px;
+      opacity: 0; transform: translateX(10px); transition: all 0.3s ease;
       box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
     }
 
-    .dossier-panel.active {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .dossier-title {
-      color: #00f0ff;
-      font-weight: bold;
-      font-size: 0.9rem;
-      border-bottom: 1px solid rgba(0,240,255,0.3);
-      padding-bottom: 4px;
-    }
-
-    .dossier-desc {
-      font-size: 0.75rem;
-      color: #a0c0d0;
-      line-height: 1.3;
-    }
-
-    .dossier-staff {
-      font-size: 0.75rem;
-      color: #fff;
-    }
+    .dossier-panel.active { opacity: 1; transform: translateX(0); }
+    .dossier-title { color: #00f0ff; font-weight: bold; font-size: 0.9rem; border-bottom: 1px solid rgba(0,240,255,0.3); padding-bottom: 4px; }
+    .dossier-desc { font-size: 0.75rem; color: #a0c0d0; line-height: 1.3; }
+    .dossier-staff { font-size: 0.75rem; color: #fff; }
 
     .hidden { display: none !important; }
 
-    /* МОБИЛЬНЫЕ СТИЛИ */
     @media (max-width: 900px) and (orientation: landscape) {
-      #desktop {
-        padding: 10px; gap: 10px;
-        grid-template-columns: repeat(auto-fill, 75px);
-        grid-template-rows: repeat(auto-fill, 75px);
-      }
+      #desktop { padding: 10px; gap: 10px; grid-template-columns: repeat(auto-fill, 75px); grid-template-rows: repeat(auto-fill, 75px); }
       .icon { width: 70px; height: 70px; }
       .icon-img { font-size: 1.8rem; }
       .icon-title { font-size: 0.7rem; }
-      .window {
-        width: 90vw !important;
-        height: 80vh !important;
-        left: 5vw !important; top: 5vh !important;
-      }
-      #operators-win {
-        width: 92vw !important;
-        height: 82vh !important;
-        left: 4vw !important; top: 4vh !important;
-      }
+      .window { width: 90vw !important; height: 80vh !important; left: 5vw !important; top: 5vh !important; }
+      #operators-win { width: 92vw !important; height: 82vh !important; left: 4vw !important; top: 4vh !important; }
       .ship-map-container { flex-direction: row; gap: 8px; }
       .dossier-panel { width: 180px; font-size: 0.8rem; }
     }
@@ -414,7 +234,7 @@
 </head>
 <body>
 
-  <!-- 1. ЭКРАН ВХОДА -->
+  <!-- ЭКРАН ВХОДА -->
   <div id="login-screen">
     <div class="login-box">
       <div class="lang-selector-login">
@@ -430,14 +250,14 @@
     </div>
   </div>
 
-  <!-- 2. ВИДЕО-ЗАСТАВКА -->
+  <!-- ВИДЕО-ЗАСТАВКА -->
   <div id="video-overlay">
     <video id="intro-video" preload="auto" playsinline>
       <source src="Welcome Back, Doctor..mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- 3. РАБОЧИЙ СТОЛ -->
+  <!-- РАБОЧИЙ СТОЛ -->
   <div id="desktop-container">
     <div class="crt-overlay"></div>
 
@@ -554,173 +374,6 @@
 
   <audio id="bgm-desktop" src="[Arknights OST] Main Theme BGM (1Hour Loop).mp3" loop preload="auto"></audio>
 
-  <script>
-    let currentLang = localStorage.getItem('prts_lang') || 'ru';
-
-    // Функция переключения языков
-    function setLanguage(lang) {
-      currentLang = lang;
-      localStorage.setItem('prts_lang', lang);
-
-      // Обновление подсвеченных кнопок языков
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        if (btn.getAttribute('data-lang') === lang) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-
-      // Перевод обычного текста
-      if (typeof i18n !== 'undefined' && i18n[lang]) {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-          const key = el.getAttribute('data-i18n');
-          if (i18n[lang][key]) {
-            el.innerText = i18n[lang][key];
-          }
-        });
-
-        // Перевод плейсхолдеров в инпутах
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-i18n-placeholder');
-          if (i18n[lang][key]) {
-            el.placeholder = i18n[lang][key];
-          }
-        });
-      }
-    }
-
-    const loginScreen = document.getElementById('login-screen');
-    const videoOverlay = document.getElementById('video-overlay');
-    const introVideo = document.getElementById('intro-video');
-    const bgmDesktop = document.getElementById('bgm-desktop');
-    const loginInput = document.getElementById('login-input');
-    const passwordInput = document.getElementById('password-input');
-    const loginBtn = document.getElementById('login-btn');
-    const hintText = document.getElementById('hint-text');
-
-    const targetLogin = "Doctor";
-    const targetPassword = "••••••••";
-    let loginProgress = 0;
-    let passwordProgress = 0;
-    let isTransitioning = false;
-
-    document.addEventListener('keydown', (e) => {
-      if (isTransitioning) return;
-
-      if (loginProgress < targetLogin.length) {
-        loginProgress++;
-        loginInput.value = targetLogin.substring(0, loginProgress);
-      } else if (passwordProgress < targetPassword.length) {
-        passwordProgress++;
-        passwordInput.value = targetPassword.substring(0, passwordProgress);
-        if (passwordProgress === targetPassword.length) {
-          loginBtn.classList.add('active');
-          hintText.setAttribute('data-i18n', 'hintClick');
-          setLanguage(currentLang);
-        }
-      }
-    });
-
-    function startLoginSequence() {
-      if (isTransitioning) return;
-      isTransitioning = true;
-
-      loginInput.value = targetLogin;
-      passwordInput.value = targetPassword;
-
-      videoOverlay.style.display = 'block';
-      videoOverlay.style.opacity = '1';
-
-      introVideo.currentTime = 0;
-      
-      introVideo.play().then(() => {
-        loginScreen.style.display = 'none';
-      }).catch(e => {
-        console.log('Video play error:', e);
-        loginScreen.style.display = 'none';
-      });
-    }
-
-    introVideo.addEventListener('timeupdate', () => {
-      const timeLeft = introVideo.duration - introVideo.currentTime;
-
-      if (timeLeft <= 2 && videoOverlay.style.opacity !== '0') {
-        videoOverlay.style.opacity = '0';
-
-        if (bgmDesktop.paused) {
-          bgmDesktop.volume = 0.4;
-          bgmDesktop.play().catch(e => console.log('Audio error:', e));
-        }
-      }
-    });
-
-    introVideo.addEventListener('ended', () => {
-      videoOverlay.style.display = 'none';
-    });
-
-    function toggleStartMenu(event) {
-      if (event) event.stopPropagation();
-      const menu = document.getElementById('start-menu');
-      menu.classList.toggle('hidden');
-    }
-
-    document.addEventListener('click', (e) => {
-      const menu = document.getElementById('start-menu');
-      if (!menu.classList.contains('hidden') && !e.target.closest('#start-menu') && !e.target.closest('.start-btn')) {
-        menu.classList.add('hidden');
-      }
-    });
-
-    function openWindow(id) {
-      const win = document.getElementById(id);
-      win.classList.remove('hidden');
-      document.querySelectorAll('.window').forEach(w => w.style.zIndex = 1050);
-      win.style.zIndex = 1100;
-    }
-
-    function closeWindow(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
-    function filterDesktop() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      document.querySelectorAll('.icon').forEach(icon => {
-        const name = icon.getAttribute('data-name');
-        icon.style.display = name.includes(query) ? 'flex' : 'none';
-      });
-    }
-
-    function dragWindow(e, windowId) {
-      const win = document.getElementById(windowId);
-      document.querySelectorAll('.window').forEach(w => w.style.zIndex = 1050);
-      win.style.zIndex = 1100;
-
-      let shiftX = e.clientX - win.getBoundingClientRect().left;
-      let shiftY = e.clientY - win.getBoundingClientRect().top;
-
-      function moveAt(pageX, pageY) {
-        win.style.left = pageX - shiftX + 'px';
-        win.style.top = pageY - shiftY + 'px';
-      }
-
-      function onMouseMove(event) {
-        moveAt(event.pageX, event.pageY);
-      }
-
-      document.addEventListener('mousemove', onMouseMove);
-
-      document.onmouseup = function() {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.onmouseup = null;
-      };
-    }
-
-    // Инициализация языка при старте
-    document.addEventListener('DOMContentLoaded', () => {
-      setLanguage(currentLang);
-    });
-  </script>
   <script src="mobile-adapter.js"></script>
   <script src="prts-console.js"></script>
 </body>

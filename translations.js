@@ -1,22 +1,25 @@
 const i18n = {
   ru: {
+    // Авторизация
     loginTitle: "PRTS ARCHIVE ACCESS",
     loginPlaceholder: "Логин",
     passwordPlaceholder: "Пароль",
     loginBtn: "ВХОД В СИСТЕМУ",
     hintTyping: "[ Нажимайте любые клавиши для ввода ]",
-    hintClick: "[ Нажмите ВХОД В СИСТЕМУ ]",
+    hintClick: "[ Нажмите кнопку для входа ]",
 
+    // Рабочий стол и Меню
     iconArchive: "Архив Данных",
     iconOperators: "Операторы",
     iconTerminal: "Терминал PRTS",
-
+    searchPlaceholder: "Поиск файлов...",
     startTitle: "PRTS SYSTEM MENU",
     startArchive: "📂 Открыть Архив",
     startOperators: "👥 Открыть Операторов",
     startTerminal: "💻 Запустить Консоль",
     startExit: "🚪 Выход из системы",
 
+    // Окна
     archiveTitle: "📂 Архив Родоса",
     archiveHeader: "Записи базы данных:",
     archiveItem1: "Проект PRTS: Статус [Активен]",
@@ -25,101 +28,106 @@ const i18n = {
 
     operatorsTitle: "👥 Структура RHODES ISLAND",
     terminalTitle: "💻 PRTS Console",
-    searchPlaceholder: "Поиск файлов...",
 
-    // Секторы судна
-    sec_cmd_title: "[ СЕКТОР: УПРАВЛЕНИЕ ]",
-    sec_cmd_desc: "Главный командный мостик судна. Координация операций и принятие стратегических решений.",
-    sec_cmd_staff: "<b>Состав:</b><br>• Doctor (Стратег)<br>• Amiya (Лидер)<br>• PRTS (ИИ)",
+    // Секторы судна (Sectors Data)
+    sec_command_title: "Командный Отсек",
+    sec_command_desc: "Центр управления и координации операций Rhodes Island.",
+    sec_command_staff: "<b>Персонал:</b> Kal'tsit, Amiya",
 
-    sec_med_title: "[ СЕКТОР: МЕДИЦИНА ]",
-    sec_med_desc: "Диагностика и лечение Орипатии. Исследовательский центр кристаллов Ориджиниуму.",
-    sec_med_staff: "<b>Состав:</b><br>• Kal'tsit (Глава)<br>• Ansel (Медик)<br>• Hibiscus (Медик)",
+    sec_medical_title: "Медицинский Блок",
+    sec_medical_desc: "Диагностика и лечение Орипатии, разработка препаратов.",
+    sec_medical_staff: "<b>Персонал:</b> Kal'tsit, Ansel, Hibiscus",
 
-    sec_eng_title: "[ СЕКТОР: ИНЖЕНЕРИЯ ]",
-    sec_eng_desc: "Обслуживание двигательной системы наземного судна и разработка экипировки.",
-    sec_eng_staff: "<b>Состав:</b><br>• Closure (Гл. Инженер)<br>• Vulcan (Кузнец)"
+    sec_engineering_title: "Инженерный Отсек",
+    sec_engineering_desc: "Техобслуживание судна и разработка снаряжения.",
+    sec_engineering_staff: "<b>Персонал:</b> Closure"
   },
+
   en: {
+    // Authorization
     loginTitle: "PRTS ARCHIVE ACCESS",
     loginPlaceholder: "Login",
     passwordPlaceholder: "Password",
     loginBtn: "SYSTEM LOGIN",
     hintTyping: "[ Press any keys to type ]",
-    hintClick: "[ Click SYSTEM LOGIN ]",
+    hintClick: "[ Click button to enter ]",
 
+    // Desktop & Menu
     iconArchive: "Data Archive",
     iconOperators: "Operators",
     iconTerminal: "PRTS Terminal",
-
+    searchPlaceholder: "Search files...",
     startTitle: "PRTS SYSTEM MENU",
     startArchive: "📂 Open Archive",
     startOperators: "👥 Open Operators",
     startTerminal: "💻 Launch Console",
     startExit: "🚪 System Exit",
 
+    // Windows
     archiveTitle: "📂 Rhodes Archive",
-    archiveHeader: "Database Records:",
+    archiveHeader: "Database records:",
     archiveItem1: "PRTS Project: Status [Active]",
     archiveItem2: "Originium Mineral Report",
-    archiveItem3: "Doctor's Classified Data",
+    archiveItem3: "Doctor's Classified Files",
 
     operatorsTitle: "👥 RHODES ISLAND Structure",
     terminalTitle: "💻 PRTS Console",
-    searchPlaceholder: "Search files...",
 
-    // Sectors
-    sec_cmd_title: "[ SECTOR: COMMAND ]",
-    sec_cmd_desc: "Main command bridge. Operation coordination and strategic decision-making.",
-    sec_cmd_staff: "<b>Staff:</b><br>• Doctor (Strategist)<br>• Amiya (Leader)<br>• PRTS (AI)",
+    // Ship Sectors
+    sec_command_title: "Command Sector",
+    sec_command_desc: "Operation control and coordination center of Rhodes Island.",
+    sec_command_staff: "<b>Staff:</b> Kal'tsit, Amiya",
 
-    sec_med_title: "[ SECTOR: MEDICAL ]",
-    sec_med_desc: "Oripathy diagnostics and treatment. Originium research center.",
-    sec_med_staff: "<b>Staff:</b><br>• Kal'tsit (Head)<br>• Ansel (Medic)<br>• Hibiscus (Medic)",
+    sec_medical_title: "Medical Bay",
+    sec_medical_desc: "Oripathy diagnostics, treatment, and pharmaceutical development.",
+    sec_medical_staff: "<b>Staff:</b> Kal'tsit, Ansel, Hibiscus",
 
-    sec_eng_title: "[ SECTOR: ENGINEERING ]",
-    sec_eng_desc: "Landship propulsion system maintenance and equipment engineering.",
-    sec_eng_staff: "<b>Staff:</b><br>• Closure (Chief Eng.)<br>• Vulcan (Blacksmith)"
+    sec_engineering_title: "Engineering Department",
+    sec_engineering_desc: "Landship maintenance and equipment development.",
+    sec_engineering_staff: "<b>Staff:</b> Closure"
   },
+
   jp: {
-    loginTitle: "PRTS ARCHIVE ACCESS",
+    // ログイン
+    loginTitle: "PRTS アーカイブ アクセス",
     loginPlaceholder: "ログイン",
     passwordPlaceholder: "パスワード",
     loginBtn: "システムログイン",
-    hintTyping: "[ キーボードを押してください ]",
-    hintClick: "[ ログインボタンをクリック ]",
+    hintTyping: "[ キーボードを押して入力 ]",
+    hintClick: "[ ボタンを押してログイン ]",
 
+    // デスクトップ & メニュー
     iconArchive: "データアーカイブ",
     iconOperators: "オペレーター",
     iconTerminal: "PRTS 端末",
-
-    startTitle: "PRTS SYSTEM MENU",
+    searchPlaceholder: "ファイルを検索...",
+    startTitle: "PRTS システムメニュー",
     startArchive: "📂 アーカイブを開く",
     startOperators: "👥 オペレーター一覧",
     startTerminal: "💻 コンソール起動",
     startExit: "🚪 システム終了",
 
-    archiveTitle: "📂 ロドス・アーカイブ",
+    // ウィンドウ
+    archiveTitle: "📂 ロードス アーカイブ",
     archiveHeader: "データベース記録:",
-    archiveItem1: "PRTS プロジェクト: ステータス [アクティブ]",
-    archiveItem2: "源石（オリジニウム）レポート",
-    archiveItem3: "ドクター機密資料",
+    archiveItem1: "PRTSプロジェクト: ステータス [有効]",
+    archiveItem2: "源石（オリジニウム）に関する報告書",
+    archiveItem3: "ドクター機密ファイル",
 
-    operatorsTitle: "👥 ロドス・アイランド 組織構造",
-    terminalTitle: "💻 PRTS Console",
-    searchPlaceholder: "ファイルを検索...",
+    operatorsTitle: "👥 ロードス・アイランド 組織図",
+    terminalTitle: "💻 PRTS コンソール",
 
-    // Sectors
-    sec_cmd_title: "[ 区画: 指揮部 ]",
-    sec_cmd_desc: "艦艇のメインブリッジ。作戦の統括および戦略的意思決定を行う。",
-    sec_cmd_staff: "<b>人員:</b><br>• Doctor (戦略官)<br>• Amiya (リーダー)<br>• PRTS (AI)",
+    // 艦内区画
+    sec_command_title: "司令区画",
+    sec_command_desc: "ロードス・アイランドの作戦指揮および統括センター。",
+    sec_command_staff: "<b>担当者:</b> ケルシー, アーミヤ",
 
-    sec_med_title: "[ 区画: 医療部 ]",
-    sec_med_desc: "鉱石病（オリパシー）の診断および治療。源石研究センター。",
-    sec_med_staff: "<b>人員:</b><br>• Kal'tsit (統括)<br>• Ansel (医療員)<br>• Hibiscus (医療員)",
+    sec_medical_title: "医療部",
+    sec_medical_desc: "鉱石病（オリパシー）の診断、治療、および薬品開発。",
+    sec_medical_staff: "<b>担当者:</b> ケルシー, アンセル, ハイビスカス",
 
-    sec_eng_title: "[ 区画: エンジニア部 ]",
-    sec_eng_desc: "移動都市の動力システム保守および装備の開発。",
-    sec_eng_staff: "<b>人員:</b><br>• Closure (チーフエンジニア)<br>• Vulcan (鍛冶屋)"
+    sec_engineering_title: "工学区画",
+    sec_engineering_desc: "本艦の整備および装備・システムの開発。",
+    sec_engineering_staff: "<b>担当者:</b> クロージャ"
   }
 };

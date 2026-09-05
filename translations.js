@@ -29,6 +29,10 @@ const i18n = {
     operatorsTitle: "👥 Структура RHODES ISLAND",
     terminalTitle: "💻 PRTS Console",
 
+    // Терминал (Регионы)
+    selectRegion: "Выберите регион",
+    ursusCard: "Империя Урсус",
+
     // Секторы судна (Sectors Data)
     sec_command_title: "Командный Отсек",
     sec_command_desc: "Центр управления и координации операций Rhodes Island.",
@@ -73,6 +77,10 @@ const i18n = {
     operatorsTitle: "👥 RHODES ISLAND Structure",
     terminalTitle: "💻 PRTS Console",
 
+    // Terminal (Regions)
+    selectRegion: "Select Region",
+    ursusCard: "Ursus Empire",
+
     // Ship Sectors
     sec_command_title: "Command Sector",
     sec_command_desc: "Operation control and coordination center of Rhodes Island.",
@@ -116,6 +124,10 @@ const i18n = {
 
     operatorsTitle: "👥 ロードス・アイランド 組織図",
     terminalTitle: "💻 PRTS コンソール",
+
+    // ターミナル (地域)
+    selectRegion: "地域を選択",
+    ursusCard: "ウルサス帝国",
 
     // 艦内区画
     sec_command_title: "司令区画",
